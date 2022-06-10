@@ -13,9 +13,9 @@ def db_engine():
 
 class Db:
     def __init__(self):
-        self.cstring = 'postgresql://---:---@185.221.152.242/postgres'
+        self.cstring = 'mysql+pymysql://admin_sky:123456@185.221.152.242/admin_skyimport'
         self.engine = create_engine(self.cstring)
-        self.bdsession = sessionmaker(bind=self.engine, autocommit=True, autoflush=False)()
+        self.bdsession = sessionmaker(bind=self.engine, autocommit=True, autoflush=True)()
         self.connect = self.engine.connect()
 
 Mydb = Db()

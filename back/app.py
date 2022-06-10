@@ -1,5 +1,5 @@
 from flask import Flask
-#from api import *
+from api import *
 from resources import RestApiBP
 from routes import Routes
 from flask_cors import CORS
