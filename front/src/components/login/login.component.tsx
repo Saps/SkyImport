@@ -6,7 +6,7 @@ import { AnyAction } from '@reduxjs/toolkit';
 import { LockOutlined } from '@mui/icons-material';
 import { Alert, Avatar, Box, Button, Paper, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { object, string } from 'yup';
 import { loginAction } from '~/store/user/actions';
 import { RootState } from '~/store/rootReducer';
 import type { CommonResponse } from '~/types';
@@ -22,9 +22,9 @@ export const LoginComponent = (): JSX.Element => {
             username: '',
             password: '',
         },
-        validationSchema: Yup.object({
-            username: Yup.string().required('Введите логин'),
-            password: Yup.string().required('Введите пароль'),
+        validationSchema: object({
+            username: string().required('Введите логин'),
+            password: string().required('Введите пароль'),
         }),
         onSubmit: async values => {
             try {
