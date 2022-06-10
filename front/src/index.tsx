@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { FooterComponent, HeaderComponent, MainComponent } from '~/components';
+import { AuthorizationWrapper } from '~/authorization-wrapper';
+import { FooterComponent, HeaderComponent, LoginComponent, MainComponent } from '~/components';
 import { store } from '~/store/store';
 
 import './index.scss';
@@ -38,12 +39,17 @@ ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>
             <ThemeProvider theme={theme}>
+                <Routes>
+                    <Route path="/login" element={<LoginComponent />} />
+                </Routes>
                 <Fragment>
                     <HeaderComponent />
                     <div className="main-container">
-                        <Routes>
-                            <Route path="/" element={<MainComponent />} />
-                        </Routes>
+                        <AuthorizationWrapper>
+                            <Routes>
+                                <Route path="/" element={<MainComponent />} />
+                            </Routes>
+                        </AuthorizationWrapper>
                     </div>
                     <FooterComponent />
                 </Fragment>
