@@ -1,0 +1,17 @@
+aniso8601
+attrs
+chardet
+Click
+Flask
+Flask-Cors
+Flask-RESTful
+Jinja2
+jsonschema
+MarkupSafe
+marshmallow
+requests
+SQLAlchemy
+urllib3
+Werkzeug
+psycopg2
+gunicorn
