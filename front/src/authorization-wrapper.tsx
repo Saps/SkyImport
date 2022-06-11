@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
 import { Alert, Grid } from '@mui/material';
@@ -9,8 +10,7 @@ import { getCurrentUserAction } from '~/store/user/actions';
 export const AuthorizationWrapper = ({ children }: PropsWithChildren<{}>): JSX.Element => {
     const [checked, setChecked] = useState(false);
     const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-    // const location = useLocation();
-    // const user = useSelector((state: RootState) => state.user);
+    const user = useSelector((state: RootState) => state.user);
 
     const getUser = useCallback(async () => {
         if (!checked) {
@@ -34,6 +34,8 @@ export const AuthorizationWrapper = ({ children }: PropsWithChildren<{}>): JSX.E
                     Проверка авторизации...
                 </Alert>
             </Grid>
+        ) : user.id < 0 ? (
+            <Redirect to="/login" />
         ) : (
             <>{children}</>
         )
