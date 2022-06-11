@@ -14,6 +14,7 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 600
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 100
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['JSON_AS_ASCII'] = False
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
