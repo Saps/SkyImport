@@ -1,4 +1,6 @@
 from flask import Flask
+
+import api.dblink
 from api import *
 from resources import RestApiBP
 from routes import Routes
@@ -7,7 +9,9 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] =  'postgresql://recsys:sysrec1@185.221.152.242/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] =  api.dblink.Mydb.cstring
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 600
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 100
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['CORS_HEADERS'] = 'Content-Type'
 
