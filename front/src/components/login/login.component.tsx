@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
 import { LockOutlined } from '@mui/icons-material';
@@ -15,7 +15,7 @@ import './login.component.scss';
 
 export const LoginComponent = (): JSX.Element => {
     const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-    const navigate = useNavigate();
+    const history = useHistory();
     const [errorMessage, setErrorMessage] = useState<string>('');
     const { errors, handleBlur, handleChange, handleSubmit, isValid, touched, values } = useFormik({
         initialValues: {
@@ -30,7 +30,7 @@ export const LoginComponent = (): JSX.Element => {
             try {
                 setErrorMessage('');
                 await dispatch(loginAction(values));
-                navigate('/');
+                history.replace('/');
             } catch (e) {
                 const message = (e as CommonResponse).message ?? 'Произошла неизвестная ошибка!';
                 setErrorMessage(message);
@@ -45,7 +45,7 @@ export const LoginComponent = (): JSX.Element => {
                     <LockOutlined/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Вход в Startup Guide
+                    Вход в систему
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <TextField

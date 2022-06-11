@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { AuthorizationWrapper } from '~/authorization-wrapper';
 import { FooterComponent, HeaderComponent, LoginComponent, MainComponent } from '~/components';
@@ -39,20 +39,18 @@ ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>
             <ThemeProvider theme={theme}>
-                <Routes>
-                    <Route path="/login" element={<LoginComponent />} />
-                </Routes>
-                <Fragment>
-                    <HeaderComponent />
-                    <div className="main-container">
-                        <AuthorizationWrapper>
-                            <Routes>
-                                <Route path="/" element={<MainComponent />} />
-                            </Routes>
-                        </AuthorizationWrapper>
-                    </div>
-                    <FooterComponent />
-                </Fragment>
+                <Switch>
+                    <Route exact path="/login" component={LoginComponent}/>
+                    <Fragment>
+                        <HeaderComponent />
+                        <div className="main-container">
+                            <AuthorizationWrapper>
+                                <Route exact path="/" component={MainComponent}/>
+                            </AuthorizationWrapper>
+                        </div>
+                        <FooterComponent />
+                    </Fragment>
+                </Switch>
             </ThemeProvider>
         </BrowserRouter>
     </Provider>,
