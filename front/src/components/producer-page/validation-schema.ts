@@ -12,6 +12,10 @@ export const validationSchema = [
         [site.name]: Yup.string().required(site.requiredErrorMsg),
     }),
     Yup.object().shape({
-        [csvInfo.name]: Yup.string().required(csvInfo.requiredErrorMsg),
+        [csvInfo.name]: Yup.mixed()
+            .required(csvInfo.requiredErrorMsg)
+            .test('isEmpty', csvInfo.requiredErrorMsg, (value) => value?.file)
+            .test('fileSize', 'Размер файла больше 10Мб', (value) => value?.file?.size <= 10 * 1024 * 1024)
+            .test('fileFormat', 'Неподдерживаемый формат', (value) => value?.file?.name.endsWith('.csv')),
     }),
 ];

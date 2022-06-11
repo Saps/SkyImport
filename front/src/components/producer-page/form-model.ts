@@ -27,7 +27,7 @@ export const formModel = {
     },
     csvInfo: {
         name: 'csvInfo',
-        label: 'CSV*',
+        label: 'Данные в формате CSV*',
         requiredErrorMsg: 'Загрузите файл в формате CSV',
     }
 };

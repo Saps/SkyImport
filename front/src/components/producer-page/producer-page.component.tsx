@@ -68,7 +68,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                             [formModel.region.name]: '',
                             [formModel.commodityGroup.name]: '',
                             [formModel.site.name]: '',
-                            [formModel.csvInfo.name]: '',
+                            [formModel.csvInfo.name]: {},
                         }}
                         validationSchema={currentValidationSchema}
                         onSubmit={onSubmit}
