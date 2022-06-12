@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import {
     Autocomplete, Card, CardContent, Checkbox, Container, Grid, Table, TableBody,
@@ -8,37 +8,19 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { FormikProps, useFormik } from 'formik';
 import { debounce } from 'lodash';
-import { getFirms, getRegions} from '~/api';
+import { getFirms, getRegions, getGroups } from '~/api';
 import { LoadingOverlay } from '~/components';
-import type { Firm, FirmsFilterParams, Region, FirmView } from '~/types';
+import type { Firm, FirmsFilterParams, Region, FirmView, CommodityGroup } from '~/types';
 
-interface Category {
-    id: number;
-    name: string;
-    parentId?: number;
-}
 
 interface FiltersValue {
-    categories: Category[];
+    category: CommodityGroup;
     region: Region;
     search: string;
 }
 
-const categories: Category[] = [
-    { id: 1, name: 'Бытовая техника' },
-    { id: 4, name: 'Пылесосы', parentId: 1 },
-    { id: 5, name: 'Холодильники', parentId: 1 },
-    { id: 6, name: 'Утюги', parentId: 1 },
-    { id: 2, name: 'Продукты питания' },
-    { id: 7, name: 'Фрукты', parentId: 2 },
-    { id: 8, name: 'Овощи', parentId: 2 },
-    { id: 9, name: 'Мясо', parentId: 2 },
-    { id: 3, name: 'Стройматериалы' },
-    { id: 10, name: 'Деревянные стройматериалы', parentId: 3 },
-    { id: 11, name: 'Бетонные стройматериалы', parentId: 3 },
-    { id: 12, name: 'Металлические изделия', parentId: 3 },
-    { id: 4, name: 'Косметика' },
-];
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const loadFirmsView = async (
     filterParams: FirmsFilterParams = {},
@@ -68,20 +50,23 @@ export const ProductsPageComponent = (): JSX.Element => {
     const [firmsView, setFirmsView] = useState<Firm[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [regions, setRegions] = useState<Region[]>([]);
+    const [categories, setCategories] = useState<CommodityGroup[]>([]);
+    const [categoriesLoading, setCategoriesLoading] = useState<boolean>(false);
     const [itemsCount, setItemsCount] = useState<number>(0);
 
     const { handleChange, handleSubmit, setFieldValue, values }: FormikProps<FiltersValue> = useFormik<FiltersValue>({
         initialValues: {
-            categories: [],
+            category: { id: -1, tov_class: '', tov_group: '' },
             region: { id: -1, name: '', kladr_id: -1, type: '' },
-            search: ''
+            search: '',
         },
+
         onSubmit: values => {
             loadFirmsView(
                 {
                     name: values.search,
-                    categories: values.categories.map(c => c.id),
-                    ...(values.region.id >= 0 ? {region: values.region.id} : {})
+                    ...(values.category.id >= 0 ? { category: values.category.id } : {}),
+                    ...(values.region.id >= 0 ? { region: values.region.id } : {}),
                 },
                 currentPage,
                 perPage,
@@ -97,15 +82,15 @@ export const ProductsPageComponent = (): JSX.Element => {
         submitWithDebounce();
     };
 
-    const handleCategoriesChange = (e: React.SyntheticEvent, value: Category[]): void => {
+    const handleCategoryChange = (e: React.SyntheticEvent, value: CommodityGroup | null): void => {
         handleChange(e);
-        setFieldValue('categories', value);
+        setFieldValue('category', value ? value : { id: -1, tov_class: '', tov_group: '' });
         applyNewFilter();
     };
 
     const handleRegionChange = (e: React.SyntheticEvent, value: Region | null): void => {
         handleChange(e);
-        setFieldValue('region', value || { id: -1, name: '', kladr_id: -1, type: '' });
+        setFieldValue('region', value ? value : { id: -1, name: '' });
         applyNewFilter();
     };
 
@@ -140,8 +125,24 @@ export const ProductsPageComponent = (): JSX.Element => {
         }
     };
 
+    const loadCategories = async () => {
+        setCategoriesLoading(true);
+
+        try {
+            const categories: CommodityGroup[] = await getGroups();
+
+            setCategories(categories);
+        } catch(e) {
+        } finally {
+            setCategoriesLoading(false);
+        }
+    };
+
+    const somethingIsLoading = () => categoriesLoading || isPageLoading || isLoading;
+
     useEffect(() => {
         loadRegions();
+        loadCategories();
         submitWithDebounce();
     }, [submitWithDebounce]);
 
@@ -163,32 +164,31 @@ export const ProductsPageComponent = (): JSX.Element => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Autocomplete
-                                        value={values.categories}
-                                        multiple
+                                        value={values.category}
                                         options={categories}
                                         disableCloseOnSelect
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        getOptionLabel={option => option.name}
+                                        groupBy={option => option.tov_class}
+                                        getOptionLabel={option => option.tov_group}
                                         renderOption={(props, option, { selected }) => (
                                             <li {...props}>
                                                 <Checkbox
-                                                    icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                                                    checkedIcon={<CheckBoxIcon fontSize="small" />}
+                                                    icon={icon}
+                                                    checkedIcon={checkedIcon}
                                                     checked={selected}
-                                                    style={{ marginRight: 8, marginLeft: option.parentId ? 8 : 0 }}
+                                                    style={{ marginRight: 8 }}
                                                 />
-                                                {option.name}
+                                                {option.tov_group}
                                             </li>
                                         )}
                                         renderInput={params => (
                                             <TextField
                                                 {...params}
                                                 label="Группы товаров"
-                                                placeholder="Выберите группы..."
+                                                placeholder="Выберите группу..."
                                                 variant="standard"
                                             />
                                         )}
-                                        onChange={handleCategoriesChange}
+                                        onChange={handleCategoryChange}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -197,7 +197,7 @@ export const ProductsPageComponent = (): JSX.Element => {
                                         options={regions}
                                         getOptionLabel={option => option.name}
                                         renderInput={params => (
-                                            <TextField {...params} label="Регион" placeholder="Выберите регион..." variant="standard"/>
+                                            <TextField {...params} label="Регион" placeholder="Выберите регион..." variant="standard" />
                                         )}
                                         onChange={handleRegionChange}
                                     />
@@ -242,7 +242,7 @@ export const ProductsPageComponent = (): JSX.Element => {
                             onPageChange={handlePageChange}
                             onRowsPerPageChange={handleRowsPerPageChange}
                         />
-                        {(isLoading || isPageLoading) && <LoadingOverlay/>}
+                        {somethingIsLoading() && <LoadingOverlay />}
                     </Paper>
                 </Grid>
             </Grid>

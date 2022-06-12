@@ -92,7 +92,7 @@ export async function getRegions(): Promise<Region[]> {
 
 export async function getGroups(): Promise<CommodityGroup[]> {
     try {
-        const { data } = await api.get<FirmsRequest, AxiosResponse<CommodityGroup[]>>('/pglist');
+        const { data } = await api.get<{}, AxiosResponse<CommodityGroup[]>>('/pglist');
 
         return data as CommodityGroup[];
     } catch (e) {
