@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { ModeratorPageComponent, ProducerPageComponent, ProductsPageComponent } from "~/components";
+import { ModeratorPageComponent, ProducerPageComponent, FirmsPageComponent } from "~/components";
 import { RootState } from '~/store/rootReducer';
 
 export const MainComponent = (): JSX.Element => {
@@ -10,7 +10,7 @@ export const MainComponent = (): JSX.Element => {
     } else if (role === 'producer') {
         return <ProducerPageComponent />;
     } else if (role === 'user') {
-        return <ProductsPageComponent />;
+        return <FirmsPageComponent />;
     } else {
         return <h3 style={{ marginTop: 25, textAlign: 'center' }}>Page not found.</h3>;
     }

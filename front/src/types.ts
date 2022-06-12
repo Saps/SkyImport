@@ -63,6 +63,7 @@ export interface ProducerInfo {
     commodityGroup: CommodityGroup[];
     email: string;
     inn: string;
+    name: string;
     region: Region;
     site: string;
     telephone: string;
