@@ -1,6 +1,6 @@
 import React from 'react';
-import { ProducerComponent } from "~/components";
+import { ProducerPageComponent } from "~/components";
 
 export const MainComponent = (): JSX.Element => {
-    return <ProducerComponent />;
+    return <ProducerPageComponent />;
 };
