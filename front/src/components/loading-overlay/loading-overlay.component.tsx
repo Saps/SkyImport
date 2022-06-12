@@ -1,5 +1,4 @@
-import { Box } from '@mui/material';
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 export const LoadingOverlay = (): JSX.Element => {
   return (

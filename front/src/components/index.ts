@@ -1,6 +1,7 @@
 export * from './confirm-modal/confirm-modal.component';
 export * from './footer/footer.component';
 export * from './header/header.component';
+export * from './loading-overlay/loading-overlay.component';
 export * from './login/login.component';
 export * from './main/main.component';
 export * from './moderator-page/moderator-page.component';
