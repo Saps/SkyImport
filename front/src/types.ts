@@ -42,6 +42,11 @@ export interface Firm {
     site: string;
 }
 
+export interface FirmView {
+    count: number;
+    items: Firm[];
+}
+
 export interface FirmsFilterParams {
     name?: string;
     inn?: string;
@@ -56,5 +61,7 @@ export interface FirmsRequest extends FirmsFilterParams {
 
 export interface Region {
     id: number;
+    kladr_id: number;
     name: string;
+    type: string;
 }

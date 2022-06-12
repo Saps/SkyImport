@@ -10,26 +10,17 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { TextField } from '@mui/material';
 import { debounce } from 'lodash';
-import type { Firm, FirmsFilterParams } from '~/types';
-import { getFirms } from '~/api';
+import type { Firm, FirmsFilterParams, Region, FirmView } from '~/types';
+import { getFirms, getRegions } from '~/api';
 
 import { useFormik, FormikProps } from 'formik';
 
-import _regions from '~/assets/regions.json';
-
-const regions: Region[] = _regions as Region[];
-
-interface Manufacturer extends Firm {}
+import { LoadingOverlay } from './loading-overlay.component';
 
 interface Category {
   id: number;
   name: string;
   parentId?: number;
-}
-
-interface Region {
-  id: number;
-  name: string;
 }
 
 interface FiltersValue {
@@ -57,77 +48,109 @@ const categories: Category[] = [
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const getManufacturers = async (filterParams: FirmsFilterParams = {}, offset: number = 0, limit: number = 15): Promise<Manufacturer[]> => {
-  const data: Manufacturer[] = await getFirms(filterParams, offset, limit);
-
-  return data;
-}
-
-const loadManufacturersView = async (
+const loadFirmsView = async (
   filterParams: FirmsFilterParams = {},
   currentPage: number,
   perPage: number,
-  setManufacturersView: React.Dispatch<React.SetStateAction<Manufacturer[]>>,
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
+  setFirmsView: React.Dispatch<React.SetStateAction<Firm[]>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setItemsCount: React.Dispatch<React.SetStateAction<number>>,
 ) => {
-  const view: Manufacturer[] = await getManufacturers(filterParams, currentPage * perPage, perPage);
-  setCurrentPage(0);
-  setManufacturersView(view);
+  setIsLoading(true);
+
+  try {
+    const view: FirmView = await getFirms(filterParams, currentPage * perPage, perPage);
+
+    setFirmsView(view.items);
+    setItemsCount(view.count);
+  } catch (e) {
+  } finally {
+    setIsLoading(false);
+  }
 };
 
 export const ProductsPageComponent = (): JSX.Element => {
   const [perPage, setPerPage] = useState<number>(5);
-  console.log('render ProductsPageComponent');
-  const [manufacturersView, setManufacturersView] = useState<Manufacturer[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
+  const [firmsView, setFirmsView] = useState<Firm[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const { errors, handleBlur, handleChange, handleSubmit, isValid, setFieldValue, setValues, values }: FormikProps<FiltersValue> = useFormik<FiltersValue>({
-    initialValues: { categories: [], region: { id: -1, name: '' }, search: '' },
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [itemsCount, setItemsCount] = useState<number>(0);
+  
+  const {
+    errors, handleBlur, handleChange, handleSubmit, isValid, setFieldValue, setValues, values
+  }: FormikProps<FiltersValue> = useFormik<FiltersValue>({
+    initialValues: { categories: [], region: { id: -1, name: '', kladr_id: -1, type: '' }, search: '' },
 
     onSubmit: values => {
-      console.log('handleFiltersChange', values);
-      loadManufacturersView(
-        { name: values.search, categories: values.categories.map(c => c.id), ...(values.region.id >= 0 ? { region: values.region.id } : {}) },
+      loadFirmsView(
+        {
+          name: values.search,
+          categories: values.categories.map(c => c.id),
+          ...(values.region.id >= 0 ? { region: values.region.id } : {})
+        },
         currentPage,
         perPage,
-        setManufacturersView,
-        setCurrentPage,
+        setFirmsView,
+        setIsLoading,
+        setItemsCount,
       );
     },
   });
 
+  const applyNewFilter = (): void => {
+    setCurrentPage(0);
+    submitWithDebounce();
+  };
+
   const handleCategoriesChange = (e: React.SyntheticEvent, value: Category[]): void => {
-    console.log('handleCategories change', value);
     handleChange(e);
     setFieldValue('categories', value);
-    submitWithDebounce();
+    applyNewFilter();
   };
 
   const handleRegionChange = (e: React.SyntheticEvent, value: Region | null): void => {
     handleChange(e);
     setFieldValue('region', value ? value : { id: -1, name: '' });
-    submitWithDebounce();
+    applyNewFilter();
   };
 
   const handleSearchChange = (e: React.SyntheticEvent): void => {
     handleChange(e);
     setFieldValue('search', (e.target as HTMLInputElement).value);
-    submitWithDebounce();
+    applyNewFilter();
   };
 
   const handlePageChange = (e: React.MouseEvent<HTMLButtonElement> | null, page: number): void => {
     setCurrentPage(page);
+    handleSubmit();
   };
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
     setPerPage(+e.target.value as number);
+    handleSubmit();
   }
 
-
-  useEffect(() => {
-    loadManufacturersView({}, currentPage, perPage, setManufacturersView, setCurrentPage);
-  }, [currentPage, perPage, setManufacturersView, setCurrentPage]);
-
   const submitWithDebounce = useCallback(debounce(handleSubmit, 1500), [handleSubmit]);
+
+  const loadRegions = async () => {
+    setPageIsLoading(true);
+
+    try {
+      const regions: Region[] = await getRegions();
+
+      setRegions(regions);
+    } catch(e) {
+    } finally {
+      setPageIsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    loadRegions();
+    submitWithDebounce();
+  }, [submitWithDebounce]);
 
   return (
     <Container sx={{ marginTop: '20px' }}>
@@ -188,6 +211,7 @@ export const ProductsPageComponent = (): JSX.Element => {
               </Grid>
             </CardContent>
           </Card>
+          {(isLoading || isPageLoading) && <LoadingOverlay />}
         </Grid>
         <Grid item xs={9}>
           <Paper>
@@ -203,7 +227,7 @@ export const ProductsPageComponent = (): JSX.Element => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {manufacturersView.map(row => (
+                  {firmsView.map(row => (
                     <TableRow key={row.id}>
                       <TableCell component="td">{row.id}</TableCell>
                       <TableCell component="td">{row.inn}</TableCell>
@@ -218,12 +242,13 @@ export const ProductsPageComponent = (): JSX.Element => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={3100}
+              count={itemsCount}
               rowsPerPage={perPage}
               page={currentPage}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
             />
+            {(isLoading || isPageLoading) && <LoadingOverlay />}
           </Paper>
         </Grid>
 
