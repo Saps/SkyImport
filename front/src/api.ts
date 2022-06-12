@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import type {
-    ApiError, LoginInfo, LoginRequest, LogoutInfo, UserCredentials, UserInfo, Region
+    ApiError, LoginInfo, LoginRequest, LogoutInfo, ProducerInfo, Region, UserCredentials, UserInfo,
 } from '~/types';
 
 import type { FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
@@ -68,9 +68,7 @@ export async function currentUser(): Promise<UserInfo> {
     }
 }
 
-export async function getFirms(
-        filterParams: FirmsFilterParams, offset: number = 0, limit: number = 15
-    ): Promise<FirmView> {
+export async function getFirms(filterParams: FirmsFilterParams, offset: number = 0, limit: number = 15): Promise<FirmView> {
     try {
         const { data } = await api.get<FirmsRequest, AxiosResponse<FirmView>>(
             '/firmfil', { params: { ...filterParams, offset, limit } }
@@ -82,7 +80,7 @@ export async function getFirms(
     }
 }
 
-export async function getRegions() {
+export async function getRegions(): Promise<Region[]> {
     try {
         const { data } = await api.get<FirmsRequest, AxiosResponse<Region[]>>('/region');
 
@@ -92,12 +90,22 @@ export async function getRegions() {
     }
 }
 
-export async function getGroups() {
+export async function getGroups(): Promise<CommodityGroup[]> {
     try {
         const { data } = await api.get<FirmsRequest, AxiosResponse<CommodityGroup[]>>('/pglist');
 
         return data as CommodityGroup[];
     } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function sendProducerInfo(values: ProducerInfo): Promise<any> {
+    try {
+        const { data } = await api.post('/firmone', values);
+
+        return data;
+    }  catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }
 }
