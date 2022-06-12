@@ -16,3 +16,4 @@ Werkzeug
 psycopg2
 gunicorn
 mysqlclient
+Scrapy
