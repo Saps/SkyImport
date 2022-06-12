@@ -1,7 +1,7 @@
 # rest-api приложения
 from flask import Blueprint
 from flask_restful import Api
-from . import proba, user, okved2, region, firm
+from . import proba, user, okved2, region, firm, prodgroup
 
 RestApiBP = Blueprint('restapi', __name__,
                       template_folder='templates')
@@ -19,5 +19,9 @@ RestApi.add_resource(okved2.OkvedList, '/okved2')
 
 RestApi.add_resource(region.RegionList, '/region')
 
-RestApi.add_resource(firm.FirmList, '/firm')
+RestApi.add_resource(firm.FirmList, '/firmlist')
 RestApi.add_resource(firm.FirmFilter, '/firmfil')
+
+RestApi.add_resource(firm.FirmOne, '/firmone')
+
+RestApi.add_resource(prodgroup.ProdGroupList, '/pglist')
