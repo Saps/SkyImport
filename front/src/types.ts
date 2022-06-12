@@ -65,3 +65,9 @@ export interface Region {
     name: string;
     type: string;
 }
+
+export interface CommodityGroup {
+    id: number;
+    tov_class: string;
+    tov_group: string;
+}

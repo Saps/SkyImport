@@ -4,7 +4,8 @@ import type {
     ApiError, LoginInfo, LoginRequest, LogoutInfo, UserCredentials, UserInfo, Region
 } from '~/types';
 
-import type { Firm, FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
+import type { FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
+import { CommodityGroup } from "~/types";
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_API_URL}/api`,
@@ -86,6 +87,16 @@ export async function getRegions() {
         const { data } = await api.get<FirmsRequest, AxiosResponse<Region[]>>('/region');
 
         return data as Region[];
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function getGroups() {
+    try {
+        const { data } = await api.get<FirmsRequest, AxiosResponse<CommodityGroup[]>>('/pglist');
+
+        return data as CommodityGroup[];
     } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }
