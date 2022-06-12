@@ -68,10 +68,23 @@ export async function currentUser(): Promise<UserInfo> {
     }
 }
 
-export async function getFirms(filterParams: FirmsFilterParams, offset: number = 0, limit: number = 15): Promise<FirmView> {
+export async function getFirms(
+        type: 'approved' | 'premoderated' = 'approved',
+        filterParams: FirmsFilterParams,
+        offset: number = 0,
+        limit: number = 15,
+    ): Promise<FirmView> {
+    let url: string = '';
+
+    if (type === 'approved') {
+        url = '/firmfil';
+    } else if (type === 'premoderated') {
+        url = '/firmmod';
+    }
+
     try {
         const { data } = await api.get<FirmsRequest, AxiosResponse<FirmView>>(
-            '/firmfil', { params: { ...filterParams, offset, limit } }
+            url, { params: { ...filterParams, offset, limit } }
         );
 
         return data as FirmView;
