@@ -56,7 +56,7 @@ class RSFirm(Base):
         sql = f"""
                     select id, inn, name, full_name, site
                     from rs_firms
-                    where {ins_nam} {ins_inn} {ins_cat} {ins_reg} {ins_prod} 1=1
+                    where {ins_nam} {ins_inn} {ins_cat} {ins_reg} {ins_prod} and approved = 1
                     order by 1
                     {ins_lim} {ins_off}
                 """

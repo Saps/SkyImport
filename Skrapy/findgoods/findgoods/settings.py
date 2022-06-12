@@ -63,7 +63,8 @@ DOWNLOAD_DELAY = 3
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'findgoods.pipelines.FindgoodsPipeline': 300,
+    #'findgoods.pipelines.FindgoodsPipeline': 300,
+    'pipelines.FindgoodsPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

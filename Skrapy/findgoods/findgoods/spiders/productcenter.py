@@ -1,9 +1,16 @@
 import scrapy
 import re
+import sys
+
+sys.path.append('..')
+import settings
+
 
 class ProductcenterSpiper(scrapy.Spider):
     name = 'productcenter'
     start_urls = ['https://productcenter.ru/producers/r-moskovskaia-obl-191']
+
+    custom_settings = settings.__dict__
 
     def parse(self, response):
         for link in response.css('div.cards a.link::attr(href)'):

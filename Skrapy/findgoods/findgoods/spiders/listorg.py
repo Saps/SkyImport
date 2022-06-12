@@ -1,17 +1,17 @@
 import scrapy
 import re
-
+import sys
 #https://www.list-org.com/list?okved2=01.1&okato=45
+
+sys.path.append('..')
+import settings
+
 
 class ListOrgSpiper(scrapy.Spider):
     name = 'list-org'
     start_urls = ['https://www.list-org.com/list?okved2=01.1&okato=45']
 
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'pipelines.FindgoodsPipeline': 300,
-        }
-    }
+    custom_settings = settings.__dict__
 
     def parse(self, response):
         #content = response.css('div.content').extract()
