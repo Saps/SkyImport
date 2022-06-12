@@ -21,6 +21,10 @@ RestApi.add_resource(region.RegionList, '/region')
 
 RestApi.add_resource(firm.FirmList, '/firmlist')
 RestApi.add_resource(firm.FirmFilter, '/firmfil')
+RestApi.add_resource(firm.FirmModFilter, '/firmmod')
+
+RestApi.add_resource(firm.FirmApprove, '/firmapprove')
+RestApi.add_resource(firm.FirmReject, '/firmreject')
 
 RestApi.add_resource(firm.FirmOne, '/firmone')
 

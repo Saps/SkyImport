@@ -17,4 +17,4 @@ psycopg2
 gunicorn
 mysqlclient
 pymysql
-Scrapy 
+Scrapy
