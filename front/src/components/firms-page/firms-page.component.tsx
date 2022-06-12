@@ -43,7 +43,7 @@ const loadFirmsView = async (
     }
 };
 
-export const ProductsPageComponent = (): JSX.Element => {
+export const FirmsPageComponent = (): JSX.Element => {
     const [perPage, setPerPage] = useState<number>(5);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
