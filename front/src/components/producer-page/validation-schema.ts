@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { formModel } from './form-model';
 
-const { producerName, inn, region, commodityGroup, site, fileInfo, email, telephone } = formModel;
+const { producerName, inn, region, commodityGroup, site, email, telephone, fileInfo } = formModel;
 
 export const validationSchema = [
     Yup.object().shape({
@@ -12,13 +12,13 @@ export const validationSchema = [
         [site.name]: Yup.string().required(site.requiredErrorMsg),
         [email.name]: Yup.string().required(email.requiredErrorMsg).email(email.invalidErrorMsg),
         [telephone.name]: Yup.string().notRequired()
-            .matches(/^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/, telephone.invalidErrorMsg),
+            .matches(/^((8|\+7)[- ]?)?(\(?\d{3}\)?[- ]?)?[\d\- ]{7,10}$/, telephone.invalidErrorMsg),
     }),
     Yup.object().shape({
         [fileInfo.name]: Yup.mixed()
-            .required(fileInfo.requiredErrorMsg)
-            .test('isEmpty', fileInfo.requiredErrorMsg, (value) => value?.file)
-            .test('fileSize', 'Размер файла больше 10Мб', (value) => value?.file?.size <= 10 * 1024 * 1024)
-            .test('fileFormat', 'Неподдерживаемый формат', (value) => /\.(csv|xls|xlsx)$/.test(value?.file?.name ?? '')),
+            .notRequired()
+            .nullable(true)
+            .test('fileSize', 'Размер файла больше 10Мб', val => val?.file?.size == null || val.file.size <= 10 * 1024 * 1024)
+            .test('fileFormat', 'Неподдерживаемый формат', val => val?.file?.name == null || /\.(csv|xls|xlsx)$/.test(val.file.name)),
     }),
 ];
