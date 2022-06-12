@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { FieldMetaProps, useField } from 'formik';
-import { Autocomplete, FormHelperText, Grid, TextField, Typography } from '@mui/material';
+import {
+    Box, Checkbox, Chip, FormControl, FormHelperText, Grid, InputLabel,
+    ListItemText, MenuItem, Select, TextField, Typography,
+} from '@mui/material';
 import { getGroups, getRegions } from '~/api';
-import { LoadingOverlay } from '~/components/loading-overlay/loading-overlay.component';
+import { LoadingOverlay } from '~/components';
 import { CommodityGroup, Region } from '~/types';
 import { formModel } from './form-model';
 
 export const MainInfoForm = (): JSX.Element => {
-    const [commodityGroupField, commodityGroupMeta] = useField(formModel.commodityGroup.name);
+    const [commodityGroupField, commodityGroupMeta, commodityGroupHelper] = useField(formModel.commodityGroup.name);
     const [emailField, emailMeta] = useField(formModel.email.name);
     const [groups, setGroups] = useState<CommodityGroup[]>([]);
     const [innField, innMeta] = useField(formModel.inn.name);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [producerNameField, producerNameMeta] = useField(formModel.producerName.name);
     const [regions, setRegions] = useState<Region[]>([]);
-    const [regionField, regionMeta] = useField(formModel.region.name);
+    const [regionField, regionMeta, regionHelper] = useField(formModel.region.name);
     const [siteField, siteMeta] = useField(formModel.site.name);
     const [telephoneField, telephoneMeta] = useField(formModel.telephone.name);
+
+    const groupToString = (value: number): string => {
+        const option = groups.find(({ id }) => id === value);
+        return option?.tov_class + ': ' + option?.tov_group;
+    };
 
     const helperText = (meta: FieldMetaProps<any>): string => meta.error && meta.touched ? meta.error : '';
 
@@ -66,30 +74,60 @@ export const MainInfoForm = (): JSX.Element => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <Autocomplete
-                        disabled
-                        value={regionField.value}
-                        getOptionLabel={option => option.name}
-                        options={regions}
-                        renderInput={params => (
-                            <TextField {...params} label={formModel.region.label} variant="standard" />
-                        )}
-                    />
-                    {regionMeta.touched && regionMeta.error && <FormHelperText>{regionMeta.error}</FormHelperText>}
+                    <FormControl error={!!regionMeta.error} fullWidth variant="outlined">
+                        <InputLabel>{formModel.region.label}</InputLabel>
+                        <Select
+                            disabled
+                            fullWidth
+                            label={formModel.region.label}
+                            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                            name={regionField.name}
+                            onChange={event => {
+                                const region = regions.find(({ id }) => id === event.target.value) ?? null;
+                                regionHelper.setValue(region);
+                            }}
+                            required
+                            value={regionField.value.id}
+                        >
+                            {regions.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.name} {item.type}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {regionMeta.error && <FormHelperText>{regionMeta.error}</FormHelperText>}
+                    </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <Autocomplete
-                        value={commodityGroupField.value}
-                        getOptionLabel={option => option ? `${option.tov_class}: ${option.tov_group}` : ''}
-                        options={groups}
-                        renderInput={params => (
-                            <TextField {...params} label={formModel.commodityGroup.label} variant="standard" />
-                        )}
-                    />
-                    {
-                        commodityGroupMeta.touched && commodityGroupMeta.error &&
-                        <FormHelperText>{commodityGroupMeta.error}</FormHelperText>
-                    }
+                    <FormControl error={!!commodityGroupMeta.error} fullWidth variant="outlined">
+                        <InputLabel>{formModel.commodityGroup.label}</InputLabel>
+                        <Select
+                            fullWidth
+                            label={formModel.commodityGroup.label}
+                            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                            multiple
+                            name={commodityGroupField.name}
+                            onChange={event => {
+                                const result = groups.filter(({ id }) => event.target.value.includes(id));
+                                commodityGroupHelper.setValue(result);
+                            }}
+                            renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value: number) => <Chip key={value} label={groupToString(value)} />)}
+                                </Box>
+                            )}
+                            required
+                            value={commodityGroupField.value.map((group: CommodityGroup) => group.id)}
+                        >
+                            {groups.map(option => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    <Checkbox checked={commodityGroupField.value.some((item: CommodityGroup) => item.id === option.id)} />
+                                    <ListItemText primary={option.tov_class + ': ' + option.tov_group} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {commodityGroupMeta.error && <FormHelperText>{commodityGroupMeta.error}</FormHelperText>}
+                    </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField

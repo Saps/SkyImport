@@ -70,7 +70,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                             [formModel.site.name]: '',
                             [formModel.email.name]: '',
                             [formModel.telephone.name]: '',
-                            [formModel.fileInfo.name]: {},
+                            [formModel.fileInfo.name]: null,
                         }}
                         validationSchema={currentValidationSchema}
                         onSubmit={onSubmit}
@@ -81,7 +81,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                     {activeStep > 0 && (
                                         <Button onClick={() => setActiveStep(activeStep - 1)}>
-                                            Back
+                                            Назад
                                         </Button>
                                     )}
                                     <Button
@@ -91,7 +91,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                                         color="primary"
                                     >
                                         {isSubmitting && <CircularProgress size={24} />}
-                                        {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+                                        {activeStep === steps.length - 1 ? 'Отправить' : 'Далее'}
                                     </Button>
                                 </Box>
                             </Form>
