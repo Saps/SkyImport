@@ -1,8 +1,10 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import type {
-    ApiError, LoginInfo, LoginRequest, LogoutInfo, UserCredentials, UserInfo, Firm, FirmsFilterParams, FirmsRequest
+    ApiError, LoginInfo, LoginRequest, LogoutInfo, UserCredentials, UserInfo, Region
 } from '~/types';
+
+import type { Firm, FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_API_URL}/api`,
@@ -67,13 +69,23 @@ export async function currentUser(): Promise<UserInfo> {
 
 export async function getFirms(
         filterParams: FirmsFilterParams, offset: number = 0, limit: number = 15
-    ): Promise<Firm[]> {
+    ): Promise<FirmView> {
     try {
-        const { data } = await api.get<FirmsRequest, AxiosResponse<Firm[]>>(
+        const { data } = await api.get<FirmsRequest, AxiosResponse<FirmView>>(
             '/firmfil', { params: { ...filterParams, offset, limit } }
         );
 
-        return data as Firm[];
+        return data as FirmView;
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function getRegions() {
+    try {
+        const { data } = await api.get<FirmsRequest, AxiosResponse<Region[]>>('/region');
+
+        return data as Region[];
     } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }

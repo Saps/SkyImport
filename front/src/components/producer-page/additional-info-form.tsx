@@ -17,7 +17,7 @@ const UploadField = ({ field, isError, label, name, ...props }: any): JSX.Elemen
 };
 
 export const AdditionalInfoForm = (): JSX.Element => {
-    const [field, { touched, error }, { setValue }] = useField(formModel.csvInfo.name);
+    const [field, { touched, error }, { setValue }] = useField(formModel.fileInfo.name);
     const isError = touched && error && true;
     const [fileName, setFileName] = useState(field.value.name);
     const [file, setFile] = useState(field.value.file);
@@ -46,7 +46,7 @@ export const AdditionalInfoForm = (): JSX.Element => {
         <Grid container spacing={3}>
             <Grid item xs={12}>
                 <label style={{ color: `${isError ? 'red' : 'rgba(0, 0, 0, 0.54)'}` }}>
-                    {formModel.csvInfo.label}
+                    {formModel.fileInfo.label}
                 </label>
                 <br />
                 <div style={{ display: 'flex', justifyContent: 'flex-start', fontSize: '1.2em' }}>

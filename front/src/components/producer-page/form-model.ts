@@ -8,7 +8,7 @@ export const formModel = {
         name: 'inn',
         label: 'ИНН*',
         requiredErrorMsg: 'Введите ИНН',
-        invalidErrorMsg: 'Неправильный ИНН (пример: 4816523659687452)',
+        invalidErrorMsg: 'Неправильный ИНН (10–12 цифровых символов)',
     },
     region: {
         name: 'region',
@@ -25,9 +25,9 @@ export const formModel = {
         label: 'Ссылка на сайт',
         requiredErrorMsg: 'Укажите ссылку на сайт',
     },
-    csvInfo: {
-        name: 'csvInfo',
-        label: 'Данные в формате CSV*',
-        requiredErrorMsg: 'Загрузите файл в формате CSV',
+    fileInfo: {
+        name: 'fileInfo',
+        label: 'Данные в формате CSV, XSL или XLSX*',
+        requiredErrorMsg: 'Загрузите файл в формате CSV, XSL или XLSX',
     }
 };

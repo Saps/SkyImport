@@ -46,7 +46,7 @@ ReactDOM.render(
                         <div className="main-container">
                             <AuthorizationWrapper>
                                 <Route exact path="/" component={MainComponent}/>
-                                <Route exact path="/products" component={ProductsPageComponent} />
+                                <Route exact path="/products" component={ProductsPageComponent}/>
                             </AuthorizationWrapper>
                         </div>
                         <FooterComponent />
