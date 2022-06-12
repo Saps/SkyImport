@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { FieldMetaProps, useField } from 'formik';
 import {
     Box, Checkbox, Chip, FormControl, FormHelperText, Grid, InputLabel,
@@ -9,7 +9,11 @@ import { LoadingOverlay } from '~/components';
 import { CommodityGroup, Region } from '~/types';
 import { formModel } from './form-model';
 
-export const MainInfoForm = (): JSX.Element => {
+interface MainInfoProps {
+    isDisabled: boolean;
+}
+
+export const MainInfoForm = ({ isDisabled }: MainInfoProps): JSX.Element => {
     const [commodityGroupField, commodityGroupMeta, commodityGroupHelper] = useField(formModel.commodityGroup.name);
     const [emailField, emailMeta] = useField(formModel.email.name);
     const [groups, setGroups] = useState<CommodityGroup[]>([]);
@@ -46,7 +50,7 @@ export const MainInfoForm = (): JSX.Element => {
     }, []);
 
     return (
-        <React.Fragment>
+        <Fragment>
             <Typography variant="h6" align="center" py={2}>
                 Основная информация
             </Typography>
@@ -54,6 +58,7 @@ export const MainInfoForm = (): JSX.Element => {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         {...producerNameField}
+                        disabled={isDisabled}
                         error={producerNameMeta.touched && !!producerNameMeta.error}
                         fullWidth
                         helperText={helperText(producerNameMeta)}
@@ -65,6 +70,7 @@ export const MainInfoForm = (): JSX.Element => {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         {...innField}
+                        disabled={isDisabled}
                         error={innMeta.touched && !!innMeta.error}
                         fullWidth
                         helperText={helperText(innMeta)}
@@ -73,8 +79,8 @@ export const MainInfoForm = (): JSX.Element => {
                         type="text"
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <FormControl error={!!regionMeta.error} fullWidth variant="outlined">
+                <Grid item xs={12}>
+                    <FormControl disabled error={!!regionMeta.error} fullWidth variant="outlined">
                         <InputLabel>{formModel.region.label}</InputLabel>
                         <Select
                             disabled
@@ -98,10 +104,11 @@ export const MainInfoForm = (): JSX.Element => {
                         {regionMeta.error && <FormHelperText>{regionMeta.error}</FormHelperText>}
                     </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <FormControl error={!!commodityGroupMeta.error} fullWidth variant="outlined">
+                <Grid item xs={12}>
+                    <FormControl disabled={isDisabled} error={!!commodityGroupMeta.error} fullWidth variant="outlined">
                         <InputLabel>{formModel.commodityGroup.label}</InputLabel>
                         <Select
+                            disabled={isDisabled}
                             fullWidth
                             label={formModel.commodityGroup.label}
                             MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
@@ -132,6 +139,7 @@ export const MainInfoForm = (): JSX.Element => {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         {...siteField}
+                        disabled={isDisabled}
                         error={siteMeta.touched && !!siteMeta.error}
                         fullWidth
                         helperText={helperText(siteMeta)}
@@ -143,6 +151,7 @@ export const MainInfoForm = (): JSX.Element => {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         {...emailField}
+                        disabled={isDisabled}
                         error={emailMeta.touched && !!emailMeta.error}
                         fullWidth
                         helperText={helperText(emailMeta)}
@@ -154,6 +163,7 @@ export const MainInfoForm = (): JSX.Element => {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         {...telephoneField}
+                        disabled={isDisabled}
                         error={telephoneMeta.touched && !!telephoneMeta.error}
                         fullWidth
                         helperText={helperText(telephoneMeta)}
@@ -163,7 +173,7 @@ export const MainInfoForm = (): JSX.Element => {
                     />
                 </Grid>
             </Grid>
-            {isLoading && <LoadingOverlay/>}
-        </React.Fragment>
+            {!isDisabled && isLoading && <LoadingOverlay/>}
+        </Fragment>
     );
 }
