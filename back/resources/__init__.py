@@ -29,3 +29,5 @@ RestApi.add_resource(firm.FirmReject, '/firmreject')
 RestApi.add_resource(firm.FirmOne, '/firmone')
 
 RestApi.add_resource(prodgroup.ProdGroupList, '/pglist')
+RestApi.add_resource(prodgroup.ProdGroupList2, '/pglist2')
+RestApi.add_resource(prodgroup.ProdGroupReset, '/pgreset')

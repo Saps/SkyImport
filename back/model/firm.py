@@ -59,7 +59,7 @@ class RSFirm(Base):
         if p_off:
             ins_off = " offset " + p_off + " "
         sql = f"""
-                    select id, inn, name, full_name, site
+                    select id, inn, name, full_name, site, email, phone, src
                     from rs_firms
                     where {ins_nam} {ins_inn} {ins_cat} {ins_reg} {ins_prod} approved = {p_app}
                     order by 1
@@ -80,7 +80,8 @@ class RSFirm(Base):
 
         result_list = []
         for i in myset:
-            result_list.append({'id': i[0], 'inn': i[1], 'name': i[2], 'full_name': i[3], 'site': i[4]})
+            result_list.append({'id': i[0], 'inn': i[1], 'name': i[2], 'full_name': i[3], 'site': i[4],
+                                'email': i[5], 'phone': i[6], 'src':i[7] })
         return cn, result_list
 
 
