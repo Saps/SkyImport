@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Box, Container, Tabs, Tab } from '@mui/material';
-
-import { FirmsTableComponent } from '../firms-table/firms-table.component';
+import { FirmsTableComponent } from '~/components';
 
 interface TabPanelProps {
     children: JSX.Element;
