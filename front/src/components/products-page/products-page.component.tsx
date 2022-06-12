@@ -15,7 +15,7 @@ import { getFirms } from '~/api';
 
 import { useFormik, FormikProps } from 'formik';
 
-import _regions from './regions.json';
+import _regions from '~/assets/regions.json';
 
 const regions: Region[] = _regions as Region[];
 
@@ -82,7 +82,7 @@ export const ProductsPageComponent = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const { errors, handleBlur, handleChange, handleSubmit, isValid, setFieldValue, setValues, values }: FormikProps<FiltersValue> = useFormik<FiltersValue>({
     initialValues: { categories: [], region: { id: -1, name: '' }, search: '' },
-    
+
     onSubmit: values => {
       console.log('handleFiltersChange', values);
       loadManufacturersView(
@@ -226,7 +226,7 @@ export const ProductsPageComponent = (): JSX.Element => {
             />
           </Paper>
         </Grid>
-        
+
       </Grid>
     </Container>
   );

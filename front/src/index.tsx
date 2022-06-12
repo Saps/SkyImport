@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { AuthorizationWrapper } from '~/authorization-wrapper';
-import { FooterComponent, HeaderComponent, LoginComponent, MainComponent, ProductsPageComponent } from '~/components';
+import { FooterComponent, HeaderComponent, LoginComponent, MainComponent } from '~/components';
 import { store } from '~/store/store';
 
 import './index.scss';
@@ -46,7 +46,6 @@ ReactDOM.render(
                         <div className="main-container">
                             <AuthorizationWrapper>
                                 <Route exact path="/" component={MainComponent}/>
-                                <Route exact path="/products" component={ProductsPageComponent} />
                             </AuthorizationWrapper>
                         </div>
                         <FooterComponent />

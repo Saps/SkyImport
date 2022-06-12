@@ -53,3 +53,8 @@ export interface FirmsRequest extends FirmsFilterParams {
     offset: number;
     limit: number;
 }
+
+export interface Region {
+    id: number;
+    name: string;
+}
