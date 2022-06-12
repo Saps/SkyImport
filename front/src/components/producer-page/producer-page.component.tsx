@@ -65,10 +65,12 @@ export const ProducerPageComponent = (): JSX.Element => {
                         initialValues={{
                             [formModel.producerName.name]: '',
                             [formModel.inn.name]: '',
-                            [formModel.region.name]: '',
-                            [formModel.commodityGroup.name]: '',
+                            [formModel.region.name]: { id: 77, kladr_id: 7700000000000, name: 'Москва', type: 'г' },
+                            [formModel.commodityGroup.name]: [],
                             [formModel.site.name]: '',
-                            [formModel.csvInfo.name]: {},
+                            [formModel.email.name]: '',
+                            [formModel.telephone.name]: '',
+                            [formModel.fileInfo.name]: {},
                         }}
                         validationSchema={currentValidationSchema}
                         onSubmit={onSubmit}

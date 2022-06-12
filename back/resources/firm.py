@@ -20,9 +20,20 @@ class FirmFilter(Resource):
         p_region = request.args.get('region')
         p_name = request.args.get('name')
         p_inn = request.args.get('inn')
+        p_prodname = request.args.get('prodname')
 
         p_lim = request.args.get('limit')
         p_off = request.args.get('offset')
 
-        res = d.getFiltList(p_cat, p_region, p_name, p_inn, p_lim, p_off)
+        res = d.getFiltList(p_cat, p_region, p_name, p_inn, p_prodname, p_lim, p_off)
+        res2 = {
+            'count' : len(res),
+            'items' : res
+        }
+        return make_response(jsonify(res2), 200)
+
+
+class FirmOne(Resource):
+    def get(self):
+        res = 'BGG'
         return make_response(jsonify(res), 200)
