@@ -33,3 +33,23 @@ export interface ApiError {
 export interface CommonResponse {
     message: string;
 }
+
+export interface Firm {
+    id: string;
+    inn: string;
+    name: string;
+    full_name: string;
+    site: string;
+}
+
+export interface FirmsFilterParams {
+    name?: string;
+    inn?: string;
+    region?: number;
+    categories?: number[];
+}
+
+export interface FirmsRequest extends FirmsFilterParams {
+    offset: number;
+    limit: number;
+}

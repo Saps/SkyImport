@@ -12,8 +12,8 @@ export const formModel = {
     },
     region: {
         name: 'region',
-        label: 'Address Line 1*',
-        requiredErrorMsg: 'Address Line 1 is required',
+        label: 'Регион*',
+        requiredErrorMsg: 'Укажите регион',
     },
     commodityGroup: {
         name: 'commodityGroup',
@@ -23,22 +23,11 @@ export const formModel = {
     site: {
         name: 'site',
         label: 'Ссылка на сайт',
+        requiredErrorMsg: 'Укажите ссылку на сайт',
     },
-    nameOnCard: {
-        name: 'nameOnCard',
-        label: 'Name on card*',
-        requiredErrorMsg: 'Name on card is required',
-    },
-    cardNumber: {
-        name: 'cardNumber',
-        label: 'Card number*',
-        requiredErrorMsg: 'Card number is required',
-        invalidErrorMsg: 'Card number is not valid (e.g. 4111111111111)',
-    },
-    cvv: {
-        name: 'cvv',
-        label: 'CVV*',
-        requiredErrorMsg: 'CVV is required',
-        invalidErrorMsg: 'CVV is invalid (e.g. 357)',
+    csvInfo: {
+        name: 'csvInfo',
+        label: 'Данные в формате CSV*',
+        requiredErrorMsg: 'Загрузите файл в формате CSV',
     }
 };

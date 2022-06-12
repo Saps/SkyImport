@@ -7,10 +7,10 @@ export const CheckboxField = (props: any) => {
   const { label, ...rest } = props;
   const [field, meta, helper] = useField(props);
 
-  function _renderHelperText() {
+  const helperText = (): JSX.Element => {
     const [touched, error] = at(meta, 'touched', 'error');
     return error && touched ? <FormHelperText>{error}</FormHelperText> : <></>;
-  }
+  };
 
   return (
     <FormControl {...rest}>
@@ -20,7 +20,7 @@ export const CheckboxField = (props: any) => {
         control={<Checkbox {...field} onChange={e => helper.setValue(e.target.checked)} />}
         label={label}
       />
-      {_renderHelperText()}
+      {helperText()}
     </FormControl>
   );
 }

@@ -16,8 +16,8 @@ export const MainInfoForm = (): JSX.Element => {
                 <Grid item xs={12} sm={6}>
                     <InputField name={formModel.inn.name} label={formModel.inn.label} fullWidth />
                 </Grid>
-                <Grid item xs={12}>
-                    <InputField name={formModel.region.name} label={formModel.region.label} fullWidth/>
+                <Grid item xs={12} sm={6}>
+                    <InputField name={formModel.region.name} label={formModel.region.label} fullWidth />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <InputField name={formModel.commodityGroup.name} label={formModel.commodityGroup.label} fullWidth />

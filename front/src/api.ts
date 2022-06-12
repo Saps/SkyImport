@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import type {
-    ApiError, LoginInfo, LoginRequest, LogoutInfo, UserCredentials, UserInfo,
+    ApiError, LoginInfo, LoginRequest, LogoutInfo, UserCredentials, UserInfo, Firm, FirmsFilterParams, FirmsRequest
 } from '~/types';
 
 const api = axios.create({
@@ -60,6 +60,20 @@ export async function currentUser(): Promise<UserInfo> {
         const { data } = await api.get('/user/current');
 
         return data as UserInfo;
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function getFirms(
+        filterParams: FirmsFilterParams, offset: number = 0, limit: number = 15
+    ): Promise<Firm[]> {
+    try {
+        const { data } = await api.get<FirmsRequest, AxiosResponse<Firm[]>>(
+            '/firmfil', { params: { ...filterParams, offset, limit } }
+        );
+
+        return data as Firm[];
     } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }

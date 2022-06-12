@@ -1,25 +1,25 @@
 import React, { Fragment, useState } from 'react';
 import { Form, Formik } from 'formik';
 import { Box, Button, CircularProgress, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { AdditionalInfoForm } from './additional-info-form';
 import { formModel } from './form-model';
 import { MainInfoForm } from './main-info-form';
-import { PaymentForm } from './payment-form';
 import { validationSchema } from './validation-schema';
 
-const steps = ['Shipping address', 'Payment details'];
+const steps = ['Основная информация', 'Дополнительная информация'];
 
 const renderStepContent = (step: number): JSX.Element => {
     switch (step) {
         case 0:
             return <MainInfoForm />;
         case 1:
-            return <PaymentForm />;
+            return <AdditionalInfoForm />;
         default:
             return <div>Not Found</div>;
     }
 }
 
-export const ProducerComponent = (): JSX.Element => {
+export const ProducerPageComponent = (): JSX.Element => {
     const [activeStep, setActiveStep] = useState(0);
     const currentValidationSchema = validationSchema[activeStep];
 
@@ -42,7 +42,7 @@ export const ProducerComponent = (): JSX.Element => {
 
     return (
         <Grid container item direction="column" p={2} xs={12} sm={10} md={8}>
-            <Stepper activeStep={activeStep}>
+            <Stepper activeStep={activeStep} sx={{ margin: '0 auto', width: '75%' }}>
                 {steps.map(label => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
@@ -51,15 +51,15 @@ export const ProducerComponent = (): JSX.Element => {
             </Stepper>
             <Fragment>
                 {activeStep === steps.length ? (
-                    <Fragment>
-                        <Typography variant="h5" gutterBottom>
-                            Thank you for your order.
+                    <>
+                        <Typography variant="h5" align="center" gutterBottom>
+                            Спасибо за Вашу заявку.
                         </Typography>
-                        <Typography variant="subtitle1">
-                            Your order number is #2001539. We have emailed your order confirmation,
-                            and will send you an update when your order has shipped.
+                        <Typography align="center" variant="subtitle1">
+                            Ваша заявка отправлена модератору. Пожалуйста, дождитесь его решения и,
+                            если потребуется, обновите её в соответствии с полученным комментарием.
                         </Typography>
-                    </Fragment>
+                    </>
                 ) : (
                     <Formik
                         initialValues={{
@@ -68,9 +68,7 @@ export const ProducerComponent = (): JSX.Element => {
                             [formModel.region.name]: '',
                             [formModel.commodityGroup.name]: '',
                             [formModel.site.name]: '',
-                            [formModel.nameOnCard.name]: '',
-                            [formModel.cardNumber.name]: '',
-                            [formModel.cvv.name]: '',
+                            [formModel.csvInfo.name]: {},
                         }}
                         validationSchema={currentValidationSchema}
                         onSubmit={onSubmit}
