@@ -63,8 +63,15 @@ const getManufacturers = async (filterParams: FirmsFilterParams = {}, offset: nu
   return data;
 }
 
-const loadManufacturersView = async (filterParams: FirmsFilterParams = {}, currentPage: number, perPage: number, setManufacturersView: React.Dispatch<React.SetStateAction<Manufacturer[]>>) => {
+const loadManufacturersView = async (
+  filterParams: FirmsFilterParams = {},
+  currentPage: number,
+  perPage: number,
+  setManufacturersView: React.Dispatch<React.SetStateAction<Manufacturer[]>>,
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
+) => {
   const view: Manufacturer[] = await getManufacturers(filterParams, currentPage * perPage, perPage);
+  setCurrentPage(0);
   setManufacturersView(view);
 };
 
@@ -83,6 +90,7 @@ export const ProductsPageComponent = (): JSX.Element => {
         currentPage,
         perPage,
         setManufacturersView,
+        setCurrentPage,
       );
     },
   });
@@ -116,8 +124,8 @@ export const ProductsPageComponent = (): JSX.Element => {
 
 
   useEffect(() => {
-    loadManufacturersView({}, currentPage, perPage, setManufacturersView);
-  }, [currentPage, perPage, setManufacturersView]);
+    loadManufacturersView({}, currentPage, perPage, setManufacturersView, setCurrentPage);
+  }, [currentPage, perPage, setManufacturersView, setCurrentPage]);
 
   const submitWithDebounce = useCallback(debounce(handleSubmit, 1500), [handleSubmit]);
 
