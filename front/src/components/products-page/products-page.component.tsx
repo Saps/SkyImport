@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
-import { Table, TableBody, TableContainer, TableRow, TableCell, TableHead } from '@mui/material';
+import { Table, TableBody, TableContainer, TableRow, TableCell, TableHead, TablePagination } from '@mui/material';
 import { Grid } from '@mui/material';
 import { Card, CardContent } from '@mui/material';
 import { Container } from '@mui/material';
@@ -24,6 +24,7 @@ interface Manufacturer extends Firm {}
 interface Category {
   id: number;
   name: string;
+  parentId?: number;
 }
 
 interface Region {
@@ -38,10 +39,19 @@ interface FiltersValue {
 }
 
 const categories: Category[] = [
-  { id: 1, name: 'Бытовая техника' },
-  { id: 2, name: 'Продукты питания' },
-  { id: 3, name: 'Стройматериалы' },
-  { id: 4, name: 'Косметика' },
+    { id: 1, name: 'Бытовая техника' },
+    { id: 4, name: 'Пылесосы', parentId: 1 },
+    { id: 5, name: 'Холодильники', parentId: 1 },
+    { id: 6, name: 'Утюги', parentId: 1 },
+    { id: 2, name: 'Продукты питания' },
+    { id: 7, name: 'Фрукты', parentId: 2 },
+    { id: 8, name: 'Овощи', parentId: 2 },
+    { id: 9, name: 'Мясо', parentId: 2 },
+    { id: 3, name: 'Стройматериалы' },
+    { id: 10, name: 'Деревянные стройматериалы', parentId: 3 },
+    { id: 11, name: 'Бетонные стройматериалы', parentId: 3 },
+    { id: 12, name: 'Металлические изделия', parentId: 3 },
+    { id: 4, name: 'Косметика' },
 ];
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -59,7 +69,7 @@ const loadManufacturersView = async (filterParams: FirmsFilterParams = {}, curre
 };
 
 export const ProductsPageComponent = (): JSX.Element => {
-  const perPage: number = 15;
+  const [perPage, setPerPage] = useState<number>(5);
   console.log('render ProductsPageComponent');
   const [manufacturersView, setManufacturersView] = useState<Manufacturer[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -95,6 +105,14 @@ export const ProductsPageComponent = (): JSX.Element => {
     setFieldValue('search', (e.target as HTMLInputElement).value);
     submitWithDebounce();
   };
+
+  const handlePageChange = (e: React.MouseEvent<HTMLButtonElement> | null, page: number): void => {
+    setCurrentPage(page);
+  };
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
+    setPerPage(+e.target.value as number);
+  }
 
 
   useEffect(() => {
@@ -132,7 +150,7 @@ export const ProductsPageComponent = (): JSX.Element => {
                           icon={icon}
                           checkedIcon={checkedIcon}
                           checked={selected}
-                          style={{ marginRight: 8 }}
+                          style={{ marginRight: 8, marginLeft: option.parentId ? 8 : 0 }}
                         />
                         {option.name}
                       </li>
@@ -164,30 +182,41 @@ export const ProductsPageComponent = (): JSX.Element => {
           </Card>
         </Grid>
         <Grid item xs={9}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell component="th">ID</TableCell>
-                  <TableCell component="th">ИНН</TableCell>
-                  <TableCell component="th">Название</TableCell>
-                  <TableCell component="th">Полное название</TableCell>
-                  <TableCell component="th">Сайт</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {manufacturersView.map(row => (
-                  <TableRow key={row.id}>
-                    <TableCell component="td">{row.id}</TableCell>
-                    <TableCell component="td">{row.inn}</TableCell>
-                    <TableCell component="td">{row.name}</TableCell>
-                    <TableCell component="td">{row.full_name}</TableCell>
-                    <TableCell component="td">{row.site}</TableCell>
+          <Paper>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell component="th">ID</TableCell>
+                    <TableCell component="th">ИНН</TableCell>
+                    <TableCell component="th">Название</TableCell>
+                    <TableCell component="th">Полное название</TableCell>
+                    <TableCell component="th">Сайт</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {manufacturersView.map(row => (
+                    <TableRow key={row.id}>
+                      <TableCell component="td">{row.id}</TableCell>
+                      <TableCell component="td">{row.inn}</TableCell>
+                      <TableCell component="td">{row.name}</TableCell>
+                      <TableCell component="td">{row.full_name}</TableCell>
+                      <TableCell component="td">{row.site}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={3100}
+              rowsPerPage={perPage}
+              page={currentPage}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
+          </Paper>
         </Grid>
         
       </Grid>
