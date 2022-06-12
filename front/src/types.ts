@@ -59,6 +59,19 @@ export interface FirmsRequest extends FirmsFilterParams {
     limit: number;
 }
 
+export interface ProducerInfo {
+    commodityGroup: CommodityGroup[];
+    email: string;
+    inn: string;
+    region: Region;
+    site: string;
+    telephone: string;
+}
+
+export interface SendProducerInfo extends ProducerInfo {
+    fileInfo: { name: string; result: string; } | null;
+}
+
 export interface Region {
     id: number;
     kladr_id: number;

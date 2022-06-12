@@ -9,7 +9,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { FormikProps, useFormik } from 'formik';
 import { debounce } from 'lodash';
 import { getFirms, getRegions} from '~/api';
-import { LoadingOverlay } from '~/components/loading-overlay/loading-overlay.component';
+import { LoadingOverlay } from '~/components';
 import type { Firm, FirmsFilterParams, Region, FirmView } from '~/types';
 
 interface Category {
@@ -39,9 +39,6 @@ const categories: Category[] = [
     { id: 12, name: 'Металлические изделия', parentId: 3 },
     { id: 4, name: 'Косметика' },
 ];
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
-const checkedIcon = <CheckBoxIcon fontSize="small"/>;
 
 const loadFirmsView = async (
     filterParams: FirmsFilterParams = {},
@@ -175,8 +172,8 @@ export const ProductsPageComponent = (): JSX.Element => {
                                         renderOption={(props, option, { selected }) => (
                                             <li {...props}>
                                                 <Checkbox
-                                                    icon={icon}
-                                                    checkedIcon={checkedIcon}
+                                                    icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                                                    checkedIcon={<CheckBoxIcon fontSize="small" />}
                                                     checked={selected}
                                                     style={{ marginRight: 8, marginLeft: option.parentId ? 8 : 0 }}
                                                 />

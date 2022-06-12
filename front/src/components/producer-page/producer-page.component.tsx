@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import { Form, Formik } from 'formik';
 import { Box, Button, CircularProgress, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { sendProducerInfo } from '~/api';
+import { SendProducerInfo } from '~/types';
 import { AdditionalInfoForm } from './additional-info-form';
 import { formModel } from './form-model';
 import { MainInfoForm } from './main-info-form';
@@ -23,14 +25,17 @@ export const ProducerPageComponent = (): JSX.Element => {
     const [activeStep, setActiveStep] = useState(0);
     const currentValidationSchema = validationSchema[activeStep];
 
-    async function submitForm(values: any, actions: any) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        alert(JSON.stringify(values, null, 2));
-        actions.setSubmitting(false);
-        setActiveStep(activeStep + 1);
+    async function submitForm(values: SendProducerInfo, actions: any) {
+        try {
+            await sendProducerInfo(values);
+            actions.setSubmitting(false);
+            setActiveStep(activeStep + 1);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
-    function onSubmit(values: any, actions: any) {
+    function onSubmit(values: SendProducerInfo, actions: any) {
         if (activeStep === steps.length - 1) {
             submitForm(values, actions);
         } else {
@@ -70,8 +75,8 @@ export const ProducerPageComponent = (): JSX.Element => {
                             [formModel.site.name]: '',
                             [formModel.email.name]: '',
                             [formModel.telephone.name]: '',
-                            [formModel.fileInfo.name]: {},
-                        }}
+                            [formModel.fileInfo.name]: null,
+                        } as unknown as SendProducerInfo}
                         validationSchema={currentValidationSchema}
                         onSubmit={onSubmit}
                     >
@@ -81,7 +86,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                     {activeStep > 0 && (
                                         <Button onClick={() => setActiveStep(activeStep - 1)}>
-                                            Back
+                                            Назад
                                         </Button>
                                     )}
                                     <Button
@@ -91,7 +96,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                                         color="primary"
                                     >
                                         {isSubmitting && <CircularProgress size={24} />}
-                                        {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+                                        {activeStep === steps.length - 1 ? 'Отправить' : 'Далее'}
                                     </Button>
                                 </Box>
                             </Form>

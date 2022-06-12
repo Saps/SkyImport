@@ -19,9 +19,9 @@ const UploadField = ({ field, isError, label, name, ...props }: any): JSX.Elemen
 export const AdditionalInfoForm = (): JSX.Element => {
     const [field, { touched, error }, { setValue }] = useField(formModel.fileInfo.name);
     const isError = touched && error && true;
-    const [fileName, setFileName] = useState(field.value.name);
-    const [file, setFile] = useState(field.value.file);
-    const [src, setSrc] = useState(field.value.src);
+    const [file, setFile] = useState(field.value);
+    const [fileName, setFileName] = useState('');
+    const [src, setSrc] = useState(field.value);
 
     const onChange = (e: Event) => {
         const reader = new FileReader();
@@ -38,7 +38,7 @@ export const AdditionalInfoForm = (): JSX.Element => {
 
     useEffect(() => {
         if (file && fileName && src) {
-            setValue({ file, name: fileName, src });
+            setValue({ name: fileName, result: src.result });
         }
     }, [file, fileName, src]);
 

@@ -37,3 +37,8 @@ class FirmOne(Resource):
     def get(self):
         res = 'BGG'
         return make_response(jsonify(res), 200)
+
+    def post(self):
+        p2 = request.json
+        res1 = 'OK'
+        return make_response(jsonify(res1), 200)

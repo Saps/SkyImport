@@ -30,16 +30,15 @@ export const formModel = {
         name: 'email',
         label: 'Электронная почта*',
         requiredErrorMsg: 'Укажите электронную почту',
-        invalidErrorMsg: 'Неправильная электронная почта (примеры: (212) 348-2626, )',
+        invalidErrorMsg: 'Неправильная электронная почта (пример: correct-email@mail.com)',
     },
     telephone: {
         name: 'telephone',
         label: 'Телефон',
-        invalidErrorMsg: 'Неправильный телефон (пример: (495)1234567, +7(926)123-45-67)',
+        invalidErrorMsg: 'Неправильный телефон (примеры: (495)1234567, +7(926)123-45-67)',
     },
     fileInfo: {
         name: 'fileInfo',
-        label: 'Данные в формате CSV, XSL или XLSX*',
-        requiredErrorMsg: 'Загрузите файл в формате CSV, XSL или XLSX',
+        label: 'Данные в формате CSV, XSL или XLSX',
     }
 };
