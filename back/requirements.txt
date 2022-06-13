@@ -18,3 +18,5 @@ gunicorn
 mysqlclient
 pymysql
 Scrapy
+selenium
+webdriver_manager

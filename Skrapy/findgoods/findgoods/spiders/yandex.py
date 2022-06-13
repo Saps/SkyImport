@@ -4,19 +4,51 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 import time
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy import text
 
 
 class YandexSpider(scrapy.Spider):
     name = 'yandex'
     base_url = 'https://yandex.ru'
 
-    inn = '7736168220'
-    firm_name = 'ооо "полиграфика"'
+    #inn = '7736168220'
+    #firm_name = 'ооо "полиграфика"'
     dop_param = '"официальный сайт"'
 
-    start_urls = [base_url+f'/search/?text={inn}+{firm_name}+{dop_param}&lr=75']
+    start_urls = []
+
+    custom_settings = {
+        'ITEM_PIPELINES' : {
+        # 'findgoods.pipelines.FindgoodsPipeline': 300,
+        'pipelines.YandexPipeline': 300,
+        }
+    }
+
+    inns = []
+    nams = []
+    c_cnt = 0
 
     def __init__(self):
+        self.cstring = 'mysql+pymysql://admin_sky:123456@185.221.152.242/admin_skyimport'
+        self.engine = create_engine(self.cstring, pool_recycle=120, pool_pre_ping=True,
+                                    connect_args={'connect_timeout': 10000})
+        self.bdsession = sessionmaker(bind=self.engine, autocommit=True, autoflush=False)()
+        self.connect = self.engine.connect()
+
+        sql = f"""
+                    select inn, name from rs_firms where approved=0 and src='crowling' and site is null
+                """
+        res1 = self.performToResult(sql)
+
+        for r in res1:
+            inn = r[0]
+            self.inns.append(r[0])
+            f_name = r[1]
+            self.nams.append(r[1])
+            self.start_urls.append(self.base_url+f'/search/?text={inn}+{f_name}+{self.dop_param}&lr=75')
+
         service = Service(executable_path=ChromeDriverManager().install())
         self.driver = webdriver.Chrome(service=service)
 
@@ -41,10 +73,20 @@ class YandexSpider(scrapy.Spider):
                     pass
 
         self.driver.close()
-
+        self.c_cnt = self.c_cnt + 1
         yield {
-            'inn': self.inn,
-            'firm': self.firm_name,
+            'inn': self.inns[self.c_cnt-1],
+            'firm': self.nams[self.c_cnt-1],
             'urls': urls,
         }
 
+    def performToResult(self, sql_str):
+        sql = text(sql_str)
+        session = self.bdsession
+        res = session.execute(sql).fetchall()
+        return res
+
+    def performWO(self, sql_str):
+        sql = text(sql_str)
+        session = self.bdsession
+        session.execute(sql)

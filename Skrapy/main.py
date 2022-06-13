@@ -7,6 +7,7 @@ sys.path.append('findgoods/findgoods')
 from productcenter import ProductcenterSpiper
 from listorg import ListOrgSpiper
 from etpgpb_goods import GispSpiper
+from yandex import YandexSpider
 
 class BlogSpider(scrapy.Spider):
     name = 'blogspider'
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     process = CrawlerProcess()
     #process.crawl(BlogSpider)
     #process.crawl(ProductcenterSpiper)
-    process.crawl(ListOrgSpiper)
-    #process.crawl(GispSpiper)
+    #process.crawl(ListOrgSpiper)
+    process.crawl(YandexSpider)
     process.start()
 

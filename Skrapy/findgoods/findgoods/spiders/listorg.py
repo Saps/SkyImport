@@ -2,6 +2,9 @@ import scrapy
 import re
 import sys
 #https://www.list-org.com/list?okved2=01.1&okato=45
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy import text
 
 sys.path.append('..')
 import settings
@@ -9,9 +12,45 @@ import settings
 
 class ListOrgSpiper(scrapy.Spider):
     name = 'list-org'
-    start_urls = ['https://www.list-org.com/list?okved2=01.1&okato=45']
+    start_urls = []
 
     custom_settings = settings.__dict__
+
+    def __init__(self):
+        self.cstring = 'mysql+pymysql://admin_sky:123456@185.221.152.242/admin_skyimport'
+        self.engine = create_engine(self.cstring, pool_recycle=120, pool_pre_ping=True,
+                                    connect_args={'connect_timeout': 10000})
+        self.bdsession = sessionmaker(bind=self.engine, autocommit=True, autoflush=False)()
+        self.connect = self.engine.connect()
+
+        sql = f"""
+            select id, okved from rs_prod_groups where update_time is NULL
+        """
+        res1 = self.performToResult(sql)
+        oarr = []
+        for r1 in res1:
+            sq = f"""
+                update rs_prod_groups set update_time=NOW() where id = {r1[0]}
+            """
+            self.performWO(sq)
+            if r1[1]:
+                mm = r1[1].split(',')
+                oarr.extend(mm)
+
+        for oa in oarr:
+            self.start_urls.append('https://www.list-org.com/list?okved2='+oa)
+
+    def performToResult(self, sql_str):
+        sql = text(sql_str)
+        session = self.bdsession
+        res = session.execute(sql).fetchall()
+        return res
+
+    def performWO(self, sql_str):
+        sql = text(sql_str)
+        session = self.bdsession
+        session.execute(sql)
+#&okato=45
 
     def parse(self, response):
         #content = response.css('div.content').extract()
