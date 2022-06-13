@@ -8,14 +8,15 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { FormikProps, useFormik } from 'formik';
 import { debounce } from 'lodash';
-import { getFirms, getRegions, getGroups } from '~/api';
+import { getFirms, getRegions, getGroups, approveItem, rejectItem } from '~/api';
 import { LoadingOverlay, RejectModalComponent } from '~/components';
 import type { Firm, FirmsFilterParams, Region, FirmView, CommodityGroup } from '~/types';
 
 interface FiltersValue {
     category: CommodityGroup;
     region: Region;
-    search: string;
+    name: string;
+    productname: string;
 }
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -29,7 +30,7 @@ const loadFirmsView = async (
     setFirmsView: React.Dispatch<React.SetStateAction<Firm[]>>,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setItemsCount: React.Dispatch<React.SetStateAction<number>>,
-) => {
+): Promise<void> => {
     setIsLoading(true);
 
     try {
@@ -64,14 +65,16 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
         initialValues: {
             category: { id: -1, tov_class: '', tov_group: '' },
             region: { id: -1, name: '', kladr_id: -1, type: '' },
-            search: '',
+            name: '',
+            productname: '',
         },
 
         onSubmit: values => {
             loadFirmsView(
                 props.entriesType,
                 {
-                    name: values.search,
+                    name: values.name,
+                    productname: values.productname,
                     ...(values.category.id >= 0 ? { category: values.category.id } : {}),
                     ...(values.region.id >= 0 ? { region: values.region.id } : {}),
                 },
@@ -115,9 +118,15 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
         applyNewFilter();
     };
 
-    const handleSearchChange = (e: React.SyntheticEvent): void => {
+    const handleNameChange = (e: React.SyntheticEvent): void => {
         handleChange(e);
-        setFieldValue('search', (e.target as HTMLInputElement).value);
+        setFieldValue('name', (e.target as HTMLInputElement).value);
+        applyNewFilter();
+    };
+
+    const handleProductNameChange = (e: React.SyntheticEvent): void => {
+        handleChange(e);
+        setFieldValue('productname', (e.target as HTMLInputElement).value);
         applyNewFilter();
     };
 
@@ -129,6 +138,24 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
     const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
         setPerPage(+e.target.value as number);
         handleSubmit();
+    }
+
+    const handleApproveItem = async (id: number): Promise<void> => {
+        const result = await approveItem(id);
+
+        if (result) {
+            handleSubmit();
+        }
+    }
+
+    const handleRejectItem = async (id: number, comment: string): Promise<void> => {
+        setRejectModalId(-1);
+
+        const result = await rejectItem(id, comment);
+
+        if (result) {
+            handleSubmit();
+        }
     }
 
     const submitWithDebounce = useCallback(debounce(handleSubmit, 1500), [handleSubmit]);
@@ -192,10 +219,19 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                             <Grid item xs={12}>
                                 <TextField
                                     variant="standard"
-                                    placeholder="Что вы хотите найти?"
+                                    placeholder="Производитель/поставщик..."
                                     fullWidth
-                                    value={values.search}
-                                    onChange={handleSearchChange}
+                                    value={values.name}
+                                    onChange={handleNameChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="standard"
+                                    placeholder="Продукт..."
+                                    fullWidth
+                                    value={values.productname}
+                                    onChange={handleProductNameChange}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -276,8 +312,8 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                         {props.entriesType === 'premoderated' ?
                                             <TableCell component="td">
                                                 <Grid container spacing={1}>
-                                                    <Grid item><Button variant="contained">Утвердить</Button></Grid>
-                                                    <Grid item><Button variant="outlined">Отклонить</Button></Grid>
+                                                    <Grid item><Button variant="contained" onClick={() => handleApproveItem(row.id)}>Утвердить</Button></Grid>
+                                                    <Grid item><Button variant="outlined" onClick={() => setRejectModalId(row.id)}>Отклонить</Button></Grid>
                                                 </Grid>
                                             </TableCell>
                                         : null}
@@ -300,7 +336,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                         <RejectModalComponent
                             info={'Вы действительно отклонить заявку?'}
                             onClose={() => setRejectModalId(-1)}
-                            onSubmit={(message) => console.log(message)}
+                            onSubmit={message => handleRejectItem(rejectModalId, message)}
                         />
                     )}
                 </Paper>
