@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Box, Container, Tabs, Tab } from '@mui/material';
 import { FirmsTableComponent } from '~/components';
 
+import { GroupParsingComponent } from '../group-parsing/group-parsing.component';
+
 interface TabPanelProps {
     children: JSX.Element;
     value: number;
@@ -32,6 +34,7 @@ export const ModeratorPageComponent = (): JSX.Element => {
                 <Tabs value={activeTab} onChange={handleTabChange}>
                     <Tab label="Основная база" />
                     <Tab label="Премодерация" />
+                    <Tab label="Парсинг данных" />
                 </Tabs>
             </Box>
             <TabPanel value={activeTab} index={0}>
@@ -39,6 +42,9 @@ export const ModeratorPageComponent = (): JSX.Element => {
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
                 <FirmsTableComponent entriesType="premoderated"/>
+            </TabPanel>
+            <TabPanel value={activeTab} index={2}>
+                <GroupParsingComponent />
             </TabPanel>
         </Container>
     );

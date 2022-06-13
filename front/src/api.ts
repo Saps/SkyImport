@@ -5,7 +5,7 @@ import type {
 } from '~/types';
 
 import type { FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
-import { CommodityGroup } from "~/types";
+import type { CommodityGroup, CommodityGroupParsingState } from '~/types';
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_API_URL}/api`,
@@ -108,6 +108,16 @@ export async function getGroups(): Promise<CommodityGroup[]> {
         const { data } = await api.get<{}, AxiosResponse<CommodityGroup[]>>('/pglist');
 
         return data as CommodityGroup[];
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function getGroupsParsingStates(): Promise<CommodityGroupParsingState[]> {
+    try {
+        const { data } = await api.get<{}, AxiosResponse<CommodityGroupParsingState[]>>('/pglist2');
+
+        return data as CommodityGroupParsingState[];
     } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }

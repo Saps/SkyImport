@@ -86,3 +86,7 @@ export interface CommodityGroup {
     tov_class: string;
     tov_group: string;
 }
+
+export interface CommodityGroupParsingState extends CommodityGroup {
+    button: string;
+}
