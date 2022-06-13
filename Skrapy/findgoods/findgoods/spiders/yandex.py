@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from selenium.webdriver.chrome.options import Options
-
+import random
 
 class YandexSpider(scrapy.Spider):
     name = 'yandex'
@@ -50,16 +50,17 @@ class YandexSpider(scrapy.Spider):
             self.nams.append(r[1])
             self.start_urls.append(self.base_url+f'/search/?text={inn}+{f_name}+{self.dop_param}&lr=75')
 
-        #chrome_options = Options()
-        #extension_path = r'/home/user/.config/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.20.0_0'
+        chrome_options = Options()
 
+        chrome_options.headless = True
+
+        #extension_path = r'/home/user/.config/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.20.0_0'
         #chrome_options.add_extension(extension_path)
 
-        #service = Service(executable_path=ChromeDriverManager().install())
-        #self.driver = webdriver.Chrome(service=service, chrome_options=chrome_options)
-
         service = Service(executable_path=ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=service)
+        self.driver = webdriver.Chrome(service=service, chrome_options=chrome_options)
+
+        #self.driver = webdriver.Chrome(service=service)
 
     def parse(self, response, **kwargs):
 
@@ -90,6 +91,7 @@ class YandexSpider(scrapy.Spider):
         }
 
         for i in range(1,2):
+            time.sleep(random.randint(5, 15))
             next_page = response.url+f'&p={i}'
             yield response.follow(next_page, callback=self.parse)
 
