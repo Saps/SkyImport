@@ -55,8 +55,35 @@ class FirmModFilter(Resource):
 
 class FirmOne(Resource):
     def get(self):
+        us = user.User().userCurrObj()
+        res = {
+            'firm' : {},
+            'message' : {}
+        }
+        if us.firm_id:
+            d = firm.RSFirm()
+            df = d.findFirmID(us.firm_id)
+            if df:
+                res['firm']['id'] = us.firm_id
+                res['firm']['name'] = df.name
+                res['firm']['full_name'] = df.full_name
+                res['firm']['inn'] = df.inn
+                res['firm']['email'] = df.email
+                res['firm']['phone'] = df.phone
+                res['firm']['reg_id'] = df.reg_id
+                res['firm']['site'] = df.site
 
-        res = 'BGG'
+                if df.approved == 1:
+                    res['message']['color'] = 'green'
+                    res['message']['text'] = 'Ваша фирма успешно верифицирована модератором'
+                else:
+                    res['message']['color'] = 'yellow'
+                    res['message']['text'] = 'Вы на модерации'
+                #res['firm'][''] = df[]
+            else:
+                res['message']['color'] = 'red'
+                res['message']['text'] = 'Вас отвергли'
+
         return make_response(jsonify(res), 200)
 
     def post(self):
