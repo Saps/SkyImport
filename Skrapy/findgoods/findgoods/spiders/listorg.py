@@ -89,13 +89,16 @@ class ListOrgSpiper(scrapy.Spider):
                     okvds = okvds + okvd.css('td::text')[0].get().strip()+','
 
             elif card_title=='Контактная информация:':
-                kont_list = card.css('div p')
-                for kont in kont_list:
-                    name_kont = kont.css('i::text').get().strip()
-                    if name_kont == 'Телефон:':
-                        phone = kont.css('span::text').get().strip()
-                    elif name_kont == 'E-mail:':
-                        email = kont.css('span::text').get().strip()
+                try:
+                    kont_list = card.css('div p')
+                    for kont in kont_list:
+                        name_kont = kont.css('i::text').get().strip()
+                        if name_kont == 'Телефон:':
+                            phone = kont.css('span::text').get().strip()
+                        elif name_kont == 'E-mail:':
+                            email = kont.css('span::text').get().strip()
+                except:
+                    pass
 
         try:
             url = response.css('div.card.w-100.p-1.p-lg-3.mt-2')[0].css('p')[3].css('span::text').get().strip()
