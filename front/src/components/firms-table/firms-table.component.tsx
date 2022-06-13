@@ -13,6 +13,8 @@ import { LoadingOverlay, RejectModalComponent } from '~/components';
 import type { Firm, FirmsFilterParams, Region, FirmView, CommodityGroup } from '~/types';
 import { TablePaginationActionsComponent } from './table-pagination-actions.component';
 
+import './firms-table.component.scss';
+
 interface FiltersValue {
     category: CommodityGroup;
     region: Region;
@@ -197,7 +199,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
     }, [submitWithDebounce]);
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className="FirmsTableComponent">
             <Grid item xs={3}>
                 <Card>
                     <CardContent>
@@ -298,6 +300,8 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                     <TableCell component="th">Название</TableCell>
                                     <TableCell component="th">Полное название</TableCell>
                                     <TableCell component="th">Сайт</TableCell>
+                                    <TableCell component="th">Телефон</TableCell>
+                                    <TableCell component="th">E-mail</TableCell>
                                     {props.entriesType === 'premoderated' ?
                                         <TableCell component="th">Управление</TableCell>
                                     : null}
@@ -311,6 +315,8 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                         <TableCell component="td">{row.name}</TableCell>
                                         <TableCell component="td">{row.full_name}</TableCell>
                                         <TableCell component="td">{row.site}</TableCell>
+                                        <TableCell component="td">{row.phone}</TableCell>
+                                        <TableCell component="td">{row.email}</TableCell>
                                         {props.entriesType === 'premoderated' ?
                                             <TableCell component="td">
                                                 <Grid container spacing={1}>

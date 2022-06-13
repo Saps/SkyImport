@@ -23,6 +23,7 @@ class User(Base):
     params = Column(JSON)
     role = Column(String)
     comp_id = Column(Integer)
+    firm_id = Column(Integer)
 
     dmp = u1.SUser()
 

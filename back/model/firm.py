@@ -138,7 +138,7 @@ class RSFirm(Base):
         d = self.findFirmID(fid)
         finn = d.inn
         sql1 = f"""
-                insert into rs_rejected_inn (inn, reason) values ('{finn}', '{reason}')
+                insert into rs_rejected_inn (inn, reason, old_id) values ('{finn}', '{reason}', {fid})
             """
         self.performWO(sql1)
         sql2 = f"""
