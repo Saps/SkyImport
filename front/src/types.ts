@@ -40,6 +40,8 @@ export interface Firm {
     name: string;
     full_name: string;
     site: string;
+    email: string;
+    phone: string;
 }
 
 export interface FirmView {
