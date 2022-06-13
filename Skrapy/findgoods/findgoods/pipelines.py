@@ -45,9 +45,11 @@ class FindgoodsPipeline:
         fname = item['firm']
         fsite = item['url']
         fokv = item['base_okvd']
+        email = item['email']
+        phone = item['phone']
         sql2 = f"""
-            insert into rs_firms (inn, name, full_name, site, src, okveds)
-            values ('{finn}', '{fname}', '{fname}', '{fsite}', 'crowling', '{fokv}')
+            insert into rs_firms (inn, name, full_name, site, src, okveds, email, phone)
+            values ('{finn}', '{fname}', '{fname}', '{fsite}', 'crowling', '{fokv}', '{email}', '{phone}')
         """
         self.performWO(sql2)
         return item
