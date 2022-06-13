@@ -80,6 +80,10 @@ class YandexSpider(scrapy.Spider):
             'urls': urls,
         }
 
+        for i in range(1,2):
+            next_page = response.url+f'&p={i}'
+            yield response.follow(next_page, callback=self.parse)
+
     def performToResult(self, sql_str):
         sql = text(sql_str)
         session = self.bdsession
