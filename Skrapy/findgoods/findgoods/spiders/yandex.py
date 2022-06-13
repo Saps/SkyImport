@@ -7,6 +7,7 @@ import time
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy import text
+from selenium.webdriver.chrome.options import Options
 
 
 class YandexSpider(scrapy.Spider):
@@ -48,6 +49,14 @@ class YandexSpider(scrapy.Spider):
             f_name = r[1]
             self.nams.append(r[1])
             self.start_urls.append(self.base_url+f'/search/?text={inn}+{f_name}+{self.dop_param}&lr=75')
+
+        #chrome_options = Options()
+        #extension_path = r'/home/user/.config/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.20.0_0'
+
+        #chrome_options.add_extension(extension_path)
+
+        #service = Service(executable_path=ChromeDriverManager().install())
+        #self.driver = webdriver.Chrome(service=service, chrome_options=chrome_options)
 
         service = Service(executable_path=ChromeDriverManager().install())
         self.driver = webdriver.Chrome(service=service)
