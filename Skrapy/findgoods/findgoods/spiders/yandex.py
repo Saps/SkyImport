@@ -62,15 +62,10 @@ class YandexSpider(scrapy.Spider):
 
         #self.driver = webdriver.Chrome(service=service)
 
-    def parse(self, response, **kwargs):
-
-        self.driver.get(response.url)
-        time.sleep(3)
-
-        elements = self.driver.find_elements(By.XPATH, '//ul[@class="serp-list serp-list_left_yes"]/li')
-
+    def parse_element(self):
         urls = ''
 
+        elements = self.driver.find_elements(By.XPATH, '//ul[@class="serp-list serp-list_left_yes"]/li')
         for element in elements:
             elms_a = element.find_elements(By.TAG_NAME, 'a')
             for elm_a in elms_a:
@@ -81,6 +76,26 @@ class YandexSpider(scrapy.Spider):
                         urls = urls + url+','
                 except:
                     pass
+        return urls
+
+    def parse(self, response, **kwargs):
+
+        self.driver.get(response.url)
+        time.sleep(3)
+
+        urls = ''
+
+        urls = urls + self.parse_element()
+
+        try:
+            for i in range(1,3):
+                button_next = self.driver.find_element(By.XPATH,
+                    '//a[@class="link link_theme_none link_target_serp pager__item pager__item_kind_next i-bem"]')
+                button_next.click()
+                time.sleep(random.randint(5, 15))
+                urls = urls + self.parse_element()
+        except:
+            pass
 
         self.driver.close()
         self.c_cnt = self.c_cnt + 1
@@ -90,10 +105,11 @@ class YandexSpider(scrapy.Spider):
             'urls': urls,
         }
 
-        for i in range(1,2):
-            time.sleep(random.randint(5, 15))
-            next_page = response.url+f'&p={i}'
-            yield response.follow(next_page, callback=self.parse)
+
+#        for i in range(1,2):
+#            time.sleep(random.randint(5, 15))
+#            next_page = response.url+f'&p={i}'
+#            yield response.follow(next_page, callback=self.parse)
 
     def performToResult(self, sql_str):
         sql = text(sql_str)
