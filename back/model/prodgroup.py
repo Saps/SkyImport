@@ -17,6 +17,7 @@ class RSProdGroup(Base):
         sql = f"""
             select id, tov_class, tov_group
             from rs_prod_groups
+            where tov_group is not null
             order by 2,3
         """
         myset = self.performToResult(sql)
@@ -30,6 +31,7 @@ class RSProdGroup(Base):
         sql = f"""
             select id, tov_class, tov_group, update_time
             from rs_prod_groups
+            where tov_group is not null
             order by 2,3
         """
         myset = self.performToResult(sql)

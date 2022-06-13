@@ -55,6 +55,7 @@ class FirmModFilter(Resource):
 
 class FirmOne(Resource):
     def get(self):
+
         res = 'BGG'
         return make_response(jsonify(res), 200)
 

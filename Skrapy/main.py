@@ -31,7 +31,7 @@ if __name__ == "__main__":
     process = CrawlerProcess()
     #process.crawl(BlogSpider)
     #process.crawl(ProductcenterSpiper)
-    #process.crawl(ListOrgSpiper)
-    process.crawl(YandexSpider)
+    process.crawl(ListOrgSpiper)
+    #process.crawl(YandexSpider)
     process.start()
 
