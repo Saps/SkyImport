@@ -2,6 +2,7 @@ export * from './firms-page/firms-page.component';
 export * from './firms-table/firms-table.component';
 export * from './footer/footer.component';
 export * from './header/header.component';
+export * from './group-parsing/group-parsing.component';
 export * from './loading-overlay/loading-overlay.component';
 export * from './login/login.component';
 export * from './main/main.component';

@@ -13,10 +13,6 @@ import './header.component.scss';
 
 const menuItems = [
     {
-        id: 'menu-item-main',
-        value: 'Основная страница',
-    },
-    {
         id: 'menu-item-logout',
         value: 'Выйти из системы',
     },
@@ -32,10 +28,7 @@ export const HeaderComponent = (): JSX.Element => {
 
     const handleCloseMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(null);
-        const { id } = event.currentTarget;
-        if (id === 'menu-item-main') {
-            history.replace('/');
-        } else if (id === 'menu-item-logout') {
+        if (event.currentTarget.id === 'menu-item-logout') {
             handleLogout();
         }
     };

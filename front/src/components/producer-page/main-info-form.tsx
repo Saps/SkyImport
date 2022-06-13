@@ -1,26 +1,23 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 import { FieldMetaProps, useField } from 'formik';
 import {
     Box, Checkbox, Chip, FormControl, FormHelperText, Grid, InputLabel,
     ListItemText, MenuItem, Select, TextField, Typography,
 } from '@mui/material';
-import { getGroups, getRegions } from '~/api';
-import { LoadingOverlay } from '~/components';
 import { CommodityGroup, Region } from '~/types';
 import { formModel } from './form-model';
 
 interface MainInfoProps {
+    groups: CommodityGroup[];
     isDisabled: boolean;
+    regions: Region[];
 }
 
-export const MainInfoForm = ({ isDisabled }: MainInfoProps): JSX.Element => {
+export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JSX.Element => {
     const [commodityGroupField, commodityGroupMeta, commodityGroupHelper] = useField(formModel.commodityGroup.name);
     const [emailField, emailMeta] = useField(formModel.email.name);
-    const [groups, setGroups] = useState<CommodityGroup[]>([]);
     const [innField, innMeta] = useField(formModel.inn.name);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [producerNameField, producerNameMeta] = useField(formModel.producerName.name);
-    const [regions, setRegions] = useState<Region[]>([]);
     const [regionField, regionMeta, regionHelper] = useField(formModel.region.name);
     const [siteField, siteMeta] = useField(formModel.site.name);
     const [telephoneField, telephoneMeta] = useField(formModel.telephone.name);
@@ -31,23 +28,6 @@ export const MainInfoForm = ({ isDisabled }: MainInfoProps): JSX.Element => {
     };
 
     const helperText = (meta: FieldMetaProps<any>): string => meta.error && meta.touched ? meta.error : '';
-
-    async function loadInfo () {
-        setIsLoading(true);
-
-        try {
-            const [groups, regions] = await Promise.all([getGroups(), getRegions()]);
-            setGroups(groups);
-            setRegions(regions);
-        } catch (e) {
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        loadInfo();
-    }, []);
 
     return (
         <Fragment>
@@ -173,7 +153,6 @@ export const MainInfoForm = ({ isDisabled }: MainInfoProps): JSX.Element => {
                     />
                 </Grid>
             </Grid>
-            {!isDisabled && isLoading && <LoadingOverlay/>}
         </Fragment>
     );
 }

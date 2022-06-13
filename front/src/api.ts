@@ -1,11 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import type {
-    ApiError, LoginInfo, LoginRequest, LogoutInfo, ProducerInfo, Region, UserCredentials, UserInfo,
+    ApiError, LoginInfo, LoginRequest, LogoutInfo, Region, UserCredentials, UserInfo,
 } from '~/types';
 
 import type { FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
 import type { CommodityGroup, CommodityGroupParsingState } from '~/types';
+import {GetProducerInfo, SendProducerInfo} from "~/types";
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_API_URL}/api`,
@@ -123,21 +124,21 @@ export async function getGroupsParsingStates(): Promise<CommodityGroupParsingSta
     }
 }
 
-export async function getProducerInfo(): Promise<any> {
+export async function getProducerInfo(): Promise<GetProducerInfo> {
     try {
         const { data } = await api.get('/firmone');
 
-        return data;
+        return data as GetProducerInfo;
     } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }
 }
 
-export async function sendProducerInfo(values: ProducerInfo): Promise<any> {
+export async function sendProducerInfo(values: SendProducerInfo): Promise<any> {
     try {
         const { data } = await api.post('/firmone', values);
 
-        return data;
+        return data as SendProducerInfo;
     } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }

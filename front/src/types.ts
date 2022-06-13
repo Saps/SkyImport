@@ -62,6 +62,23 @@ export interface FirmsRequest extends FirmsFilterParams {
     limit: number;
 }
 
+export interface GetProducerInfo {
+    firm: {
+        commodityGroup: CommodityGroup[];
+        email: string;
+        full_name: string;
+        id: number;
+        inn: string;
+        reg_id: number;
+        phone: string;
+        site: string;
+    }
+    message: {
+        color: string;
+        text: string;
+    }
+}
+
 export interface ProducerInfo {
     commodityGroup: CommodityGroup[];
     email: string;

@@ -1,8 +1,9 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 import { Alert, Box, Button, CircularProgress, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
-import { sendProducerInfo } from '~/api';
-import { SendProducerInfo } from '~/types';
+import { getGroups, getProducerInfo, getRegions, sendProducerInfo } from '~/api';
+import { LoadingOverlay } from '~/components';
+import { CommodityGroup, Region, SendProducerInfo } from '~/types';
 import { AdditionalInfoForm } from './additional-info-form';
 import { MainInfoForm } from './main-info-form';
 import { validationSchema } from './validation-schema';
@@ -20,10 +21,10 @@ const defaultValues: SendProducerInfo = {
 
 const steps = ['Основная информация', 'Дополнительная информация'];
 
-const renderStepContent = (disabled: boolean, step: number): JSX.Element => {
+const renderStepContent = (disabled: boolean, groups: CommodityGroup[], regions: Region[], step: number): JSX.Element => {
     switch (step) {
         case 0:
-            return <MainInfoForm isDisabled={disabled} />;
+            return <MainInfoForm groups={groups} isDisabled={disabled} regions={regions} />;
         case 1:
             return <AdditionalInfoForm />;
         default:
@@ -33,8 +34,14 @@ const renderStepContent = (disabled: boolean, step: number): JSX.Element => {
 
 export const ProducerPageComponent = (): JSX.Element => {
     const [activeStep, setActiveStep] = useState<number>(0);
+    const [groups, setGroups] = useState<CommodityGroup[]>([]);
+    const [info, setInfo] = useState<SendProducerInfo>(defaultValues);
     const [isApproved, setIsApproved] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isRejected, setIsRejected] = useState<boolean>(false);
     const [moderatorMessage, setModeratorMessage] = useState<string>('');
+    const [regions, setRegions] = useState<Region[]>([]);
+    const [isWarning, setIsWarning] = useState<boolean>(false);
 
     async function submitForm(values: SendProducerInfo, actions: any) {
         try {
@@ -56,14 +63,50 @@ export const ProducerPageComponent = (): JSX.Element => {
         }
     }
 
+    async function loadInfo () {
+        setIsLoading(true);
+
+        try {
+            const [groups, info, regions] = await Promise.all([getGroups(), getProducerInfo(), getRegions()]);
+            setIsApproved(info.message.color === 'green');
+            setIsRejected(info.message.color === 'red');
+            setIsWarning(info.message.color === 'yellow');
+            setModeratorMessage(info.message.text);
+            setGroups(groups);
+            setInfo({
+                commodityGroup: defaultValues.commodityGroup,
+                email: info?.firm?.email ?? defaultValues.inn,
+                fileInfo: defaultValues.fileInfo,
+                inn: info?.firm?.inn ?? defaultValues.inn,
+                name: info?.firm?.full_name ?? defaultValues.name,
+                region: regions.find(({ id }) => id === info?.firm?.reg_id) ?? defaultValues.region,
+                site: info?.firm?.site ?? defaultValues.site,
+                telephone: info?.firm?.phone ?? defaultValues.telephone,
+            });
+            setRegions(regions);
+        } catch (e) {
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        loadInfo();
+    }, []);
+
     return (
         <Grid container item direction="column" p={2} xs={12} sm={10} md={8}>
             {isApproved && (
                 <Alert variant="filled" severity="success" sx={{ marginBottom: 3 }}>
-                    Ваша заявка была одобрена!
+                    {moderatorMessage}
                 </Alert>
             )}
-            {moderatorMessage && activeStep < steps.length && (
+            {isWarning && activeStep < steps.length && (
+                <Alert variant="filled" severity="warning" sx={{ marginBottom: 3 }}>
+                    Ваша заявка находится на модерации. Сообщение модератора: {moderatorMessage}
+                </Alert>
+            )}
+            {isRejected && activeStep < steps.length && (
                 <Alert variant="filled" severity="error" sx={{ marginBottom: 3 }}>
                     Ваша заявка была отклонена. Сообщение модератора: {moderatorMessage}
                 </Alert>
@@ -88,13 +131,14 @@ export const ProducerPageComponent = (): JSX.Element => {
                     </>
                 ) : (
                     <Formik
-                        initialValues={defaultValues}
+                        enableReinitialize={true}
+                        initialValues={info}
                         validationSchema={validationSchema[activeStep]}
                         onSubmit={onSubmit}
                     >
                         {({ isSubmitting }) => (
                             <Form id="checkoutForm">
-                                {renderStepContent(isApproved, activeStep)}
+                                {renderStepContent(isApproved, groups, regions, activeStep)}
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
                                     {activeStep > 0 && (
                                         <Button onClick={() => setActiveStep(activeStep - 1)}>
@@ -116,6 +160,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                     </Formik>
                 )}
             </Fragment>
+            {isLoading && <LoadingOverlay/>}
         </Grid>
     );
 }

@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Box, Container, Tabs, Tab } from '@mui/material';
-import { FirmsTableComponent } from '~/components';
-
-import { GroupParsingComponent } from '../group-parsing/group-parsing.component';
+import { Box, Container, Tab, Tabs } from '@mui/material';
+import { FirmsTableComponent, GroupParsingComponent } from '~/components';
 
 interface TabPanelProps {
     children: JSX.Element;

@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Grid, Button } from '@mui/material';
 import PlayArrow from '@mui/icons-material/PlayArrow';
-
-import { LoadingOverlay } from '../loading-overlay/loading-overlay.component';
-
 import { getGroupsParsingStates, resetGroup } from '~/api';
+import { LoadingOverlay } from '~/components';
 import type { CommodityGroupParsingState } from '~/types';
 
 interface CommodityClassWithItems {
@@ -62,7 +60,7 @@ export const GroupParsingComponent = (): JSX.Element => {
                                                 variant="contained"
                                                 color="success"
                                                 startIcon={<PlayArrow />}
-                                                onClick={e => handleGroupReset(group.id)}
+                                                onClick={() => handleGroupReset(group.id)}
                                               >
                                                   Запустить
                                               </Button>
