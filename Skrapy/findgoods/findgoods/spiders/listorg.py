@@ -38,7 +38,7 @@ class ListOrgSpiper(scrapy.Spider):
                 oarr.extend(mm)
 
         for oa in oarr:
-            self.start_urls.append('https://www.list-org.com/list?okved2='+oa)
+            self.start_urls.append('https://www.list-org.com/list?okved2='+oa+'&okato=45')
 
     def performToResult(self, sql_str):
         sql = text(sql_str)
@@ -64,7 +64,7 @@ class ListOrgSpiper(scrapy.Spider):
             yield response.follow(link, callback=self.parse_suppliers)
 
         for i in range(2,100):
-            next_page = f'https://www.list-org.com/list?okved2=01.1&okato=45&page={i}'
+            next_page = response.url+f'&page={i}'
             yield response.follow(next_page, callback=self.parse)
 
     def parse_suppliers(self, response):
