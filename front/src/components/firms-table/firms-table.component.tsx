@@ -11,6 +11,7 @@ import { debounce } from 'lodash';
 import { getFirms, getRegions, getGroups, approveItem, rejectItem } from '~/api';
 import { LoadingOverlay, RejectModalComponent } from '~/components';
 import type { Firm, FirmsFilterParams, Region, FirmView, CommodityGroup } from '~/types';
+import { TablePaginationActionsComponent } from './table-pagination-actions.component';
 
 interface FiltersValue {
     category: CommodityGroup;
@@ -137,6 +138,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
 
     const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
         setPerPage(+e.target.value as number);
+        setCurrentPage(0);
         handleSubmit();
     }
 
@@ -330,6 +332,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                         page={currentPage}
                         onPageChange={handlePageChange}
                         onRowsPerPageChange={handleRowsPerPageChange}
+                        ActionsComponent={TablePaginationActionsComponent}
                     />
                     {somethingIsLoading() && <LoadingOverlay />}
                     {rejectModalId > -1 && (
