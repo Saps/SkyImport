@@ -35,7 +35,7 @@ export interface CommonResponse {
 }
 
 export interface Firm {
-    id: string;
+    id: number;
     inn: string;
     name: string;
     full_name: string;
@@ -49,9 +49,10 @@ export interface FirmView {
 
 export interface FirmsFilterParams {
     name?: string;
+    productname?: string;
     inn?: string;
     region?: number;
-    categories?: number[];
+    category?: number;
 }
 
 export interface FirmsRequest extends FirmsFilterParams {

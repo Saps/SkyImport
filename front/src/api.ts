@@ -118,7 +118,7 @@ export async function getProducerInfo(): Promise<any> {
         const { data } = await api.get('/firmone');
 
         return data;
-    }  catch (e) {
+    } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }
 }
@@ -128,7 +128,37 @@ export async function sendProducerInfo(values: ProducerInfo): Promise<any> {
         const { data } = await api.post('/firmone', values);
 
         return data;
-    }  catch (e) {
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function approveItem(id: number): Promise<boolean> {
+    try {
+        await api.get('/firmapprove', { params: { id } });
+
+        return true;
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function rejectItem(id: number, comment: string): Promise<boolean> {
+    try {
+        await api.get('/firmreject', { params: { id, comment } });
+
+        return true;
+    } catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
+export async function resetGroup(id: number): Promise<boolean> {
+    try {
+        await api.get('/pgreset', { params: { id } });
+
+        return true;
+    } catch (e) {
         throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
     }
 }
