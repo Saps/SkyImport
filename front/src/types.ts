@@ -49,7 +49,7 @@ export interface FirmView {
 
 export interface FirmsFilterParams {
     name?: string;
-    productname?: string;
+    prodname?: string;
     inn?: string;
     region?: number;
     category?: number;
