@@ -1,6 +1,5 @@
-import { FirmsTableComponent } from '../firms-table/firms-table.component';
 import { Box, Container } from '@mui/material';
-
+import { FirmsTableComponent } from '~/components';
 
 export const FirmsPageComponent = (): JSX.Element => {
     return (

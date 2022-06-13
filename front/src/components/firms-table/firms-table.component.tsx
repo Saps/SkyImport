@@ -1,19 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import {
-    Autocomplete, Card, CardContent, Checkbox, Container, Grid, Table, TableBody,
-    TableContainer, TableRow, TableCell, TableHead, TablePagination, TextField,
+    Autocomplete, Box, Button, ButtonGroup, Card, CardContent, Checkbox, Grid, Table,
+    TableBody, TableContainer, TableRow, TableCell, TableHead, TablePagination, TextField,
 } from '@mui/material';
-import { Button, ButtonGroup } from '@mui/material';
-import { Box } from '@mui/material';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { FormikProps, useFormik } from 'formik';
 import { debounce } from 'lodash';
 import { getFirms, getRegions, getGroups } from '~/api';
-import { LoadingOverlay } from '~/components';
+import { LoadingOverlay, RejectModalComponent } from '~/components';
 import type { Firm, FirmsFilterParams, Region, FirmView, CommodityGroup } from '~/types';
-
 
 interface FiltersValue {
     category: CommodityGroup;
@@ -52,6 +49,7 @@ interface FirmsTableComponentProps {
 
 export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesType: 'approved' }): JSX.Element => {
     const [perPage, setPerPage] = useState<number>(5);
+    const [rejectModalId, setRejectModalId] = useState<number>(-1);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
     const [firmsView, setFirmsView] = useState<Firm[]>([]);
@@ -298,6 +296,13 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                         onRowsPerPageChange={handleRowsPerPageChange}
                     />
                     {somethingIsLoading() && <LoadingOverlay />}
+                    {rejectModalId > -1 && (
+                        <RejectModalComponent
+                            info={'Вы действительно отклонить заявку?'}
+                            onClose={() => setRejectModalId(-1)}
+                            onSubmit={(message) => console.log(message)}
+                        />
+                    )}
                 </Paper>
             </Grid>
         </Grid>

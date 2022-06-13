@@ -113,6 +113,16 @@ export async function getGroups(): Promise<CommodityGroup[]> {
     }
 }
 
+export async function getProducerInfo(): Promise<any> {
+    try {
+        const { data } = await api.get('/firmone');
+
+        return data;
+    }  catch (e) {
+        throw new Error((e as AxiosError<ApiError>)?.response?.data.message);
+    }
+}
+
 export async function sendProducerInfo(values: ProducerInfo): Promise<any> {
     try {
         const { data } = await api.post('/firmone', values);
