@@ -17,7 +17,7 @@ interface FiltersValue {
     category: CommodityGroup;
     region: Region;
     name: string;
-    productname: string;
+    prodname: string;
 }
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -67,7 +67,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
             category: { id: -1, tov_class: '', tov_group: '' },
             region: { id: -1, name: '', kladr_id: -1, type: '' },
             name: '',
-            productname: '',
+            prodname: '',
         },
 
         onSubmit: values => {
@@ -75,7 +75,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                 props.entriesType,
                 {
                     name: values.name,
-                    productname: values.productname,
+                    prodname: values.prodname,
                     ...(values.category.id >= 0 ? { category: values.category.id } : {}),
                     ...(values.region.id >= 0 ? { region: values.region.id } : {}),
                 },
@@ -127,7 +127,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
 
     const handleProductNameChange = (e: React.SyntheticEvent): void => {
         handleChange(e);
-        setFieldValue('productname', (e.target as HTMLInputElement).value);
+        setFieldValue('prodname', (e.target as HTMLInputElement).value);
         applyNewFilter();
     };
 
@@ -232,7 +232,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                     variant="standard"
                                     placeholder="Продукт..."
                                     fullWidth
-                                    value={values.productname}
+                                    value={values.prodname}
                                     onChange={handleProductNameChange}
                                 />
                             </Grid>

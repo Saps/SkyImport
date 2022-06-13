@@ -155,7 +155,7 @@ export async function approveItem(id: number): Promise<boolean> {
 
 export async function rejectItem(id: number, comment: string): Promise<boolean> {
     try {
-        await api.get('/firmreject', { params: { id, comment } });
+        await api.get('/firmreject', { params: { id, reason: comment } });
 
         return true;
     } catch (e) {
