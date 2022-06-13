@@ -38,7 +38,7 @@ class ListOrgSpiper(scrapy.Spider):
                 oarr.extend(mm)
 
         for oa in oarr:
-            self.start_urls.append('https://www.list-org.com/list?okved2='+oa+'&okato=45')
+            self.start_urls.append('https://www.list-org.com/list?okved2='+oa)
 
     def performToResult(self, sql_str):
         sql = text(sql_str)

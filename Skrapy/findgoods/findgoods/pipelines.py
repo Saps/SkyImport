@@ -78,8 +78,12 @@ class YandexPipeline:
 
 
     def process_item(self, item, spider):
-
-        pass
+        iu = item['urls']
+        inn = item['inn']
+        sql = f"""
+            update rs_firms set site = '{iu}' where inn = '{inn}'
+        """
+        self.performWO(sql)
         return item
 
     def performToResult(self, sql_str):
