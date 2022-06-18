@@ -1,6 +1,5 @@
+import { Download } from '@mui/icons-material'
 import { Box, Container, Button, Grid } from '@mui/material';
-import Download from '@mui/icons-material/Download'
-
 import { FirmsTableComponent } from '~/components';
 
 export const FirmsPageComponent = (): JSX.Element => {

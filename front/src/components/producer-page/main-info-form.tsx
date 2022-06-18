@@ -1,10 +1,9 @@
-import React, { Fragment } from 'react';
-import { FieldMetaProps, useField } from 'formik';
+import { Fragment } from 'react';
+import { useField } from 'formik';
 import {
-    Box, Checkbox, Chip, FormControl, FormHelperText, Grid, InputLabel,
-    ListItemText, MenuItem, Select, TextField, Typography,
+    Box, Checkbox, Chip, FormControl, FormHelperText, Grid, InputLabel, ListItemText, MenuItem, Select, TextField, Typography,
 } from '@mui/material';
-import { CommodityGroup, Region } from '~/types';
+import type { CommodityGroup, Region } from '~/types';
 import { formModel } from './form-model';
 
 interface MainInfoProps {
@@ -27,8 +26,6 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
         return option?.tov_class + ': ' + option?.tov_group;
     };
 
-    const helperText = (meta: FieldMetaProps<any>): string => meta.error && meta.touched ? meta.error : '';
-
     return (
         <Fragment>
             <Typography variant="h6" align="center" py={2}>
@@ -41,7 +38,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                         disabled={isDisabled}
                         error={producerNameMeta.touched && !!producerNameMeta.error}
                         fullWidth
-                        helperText={helperText(producerNameMeta)}
+                        helperText={producerNameMeta.error && producerNameMeta.touched ? producerNameMeta.error : ''}
                         name={formModel.producerName.name}
                         label={formModel.producerName.label}
                         type="text"
@@ -53,7 +50,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                         disabled={isDisabled}
                         error={innMeta.touched && !!innMeta.error}
                         fullWidth
-                        helperText={helperText(innMeta)}
+                        helperText={innMeta.error && innMeta.touched ? innMeta.error : ''}
                         name={formModel.inn.name}
                         label={formModel.inn.label}
                         type="text"
@@ -68,10 +65,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                             label={formModel.region.label}
                             MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
                             name={regionField.name}
-                            onChange={event => {
-                                const region = regions.find(({ id }) => id === event.target.value) ?? null;
-                                regionHelper.setValue(region);
-                            }}
+                            onChange={event => regionHelper.setValue(regions.find(({ id }) => id === event.target.value) ?? null)}
                             required
                             value={regionField.value.id}
                         >
@@ -94,10 +88,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                             MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
                             multiple
                             name={commodityGroupField.name}
-                            onChange={event => {
-                                const result = groups.filter(({ id }) => event.target.value.includes(id));
-                                commodityGroupHelper.setValue(result);
-                            }}
+                            onChange={event => commodityGroupHelper.setValue(groups.filter(({ id }) => event.target.value.includes(id)))}
                             renderValue={(selected) => (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                     {selected.map((value: number) => <Chip key={value} label={groupToString(value)} />)}
@@ -122,7 +113,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                         disabled={isDisabled}
                         error={siteMeta.touched && !!siteMeta.error}
                         fullWidth
-                        helperText={helperText(siteMeta)}
+                        helperText={siteMeta.error && siteMeta.touched ? siteMeta.error : ''}
                         name={formModel.site.name}
                         label={formModel.site.label}
                         type="text"
@@ -134,7 +125,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                         disabled={isDisabled}
                         error={emailMeta.touched && !!emailMeta.error}
                         fullWidth
-                        helperText={helperText(emailMeta)}
+                        helperText={emailMeta.error && emailMeta.touched ? emailMeta.error : ''}
                         name={formModel.email.name}
                         label={formModel.email.label}
                         type="text"
@@ -146,7 +137,7 @@ export const MainInfoForm = ({ groups, isDisabled, regions }: MainInfoProps): JS
                         disabled={isDisabled}
                         error={telephoneMeta.touched && !!telephoneMeta.error}
                         fullWidth
-                        helperText={helperText(telephoneMeta)}
+                        helperText={telephoneMeta.error && telephoneMeta.touched ? telephoneMeta.error : ''}
                         name={formModel.telephone.name}
                         label={formModel.telephone.label}
                         type="text"

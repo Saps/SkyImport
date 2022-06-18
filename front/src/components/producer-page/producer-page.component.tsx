@@ -1,9 +1,9 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { Form, Formik } from 'formik';
+import { Fragment, useEffect, useState } from 'react';
+import { Form, Formik, FormikHelpers } from 'formik';
 import { Alert, Box, Button, CircularProgress, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { getGroups, getProducerInfo, getRegions, sendProducerInfo } from '~/api';
 import { LoadingOverlay } from '~/components';
-import { CommodityGroup, Region, SendProducerInfo } from '~/types';
+import type { CommodityGroup, Region, SendProducerInfo } from '~/types';
 import { AdditionalInfoForm } from './additional-info-form';
 import { MainInfoForm } from './main-info-form';
 import { validationSchema } from './validation-schema';
@@ -43,7 +43,7 @@ export const ProducerPageComponent = (): JSX.Element => {
     const [regions, setRegions] = useState<Region[]>([]);
     const [isWarning, setIsWarning] = useState<boolean>(false);
 
-    async function submitForm(values: SendProducerInfo, actions: any) {
+    async function submitForm(values: SendProducerInfo, actions: FormikHelpers<SendProducerInfo>) {
         try {
             await sendProducerInfo(values);
             actions.setSubmitting(false);
@@ -53,7 +53,7 @@ export const ProducerPageComponent = (): JSX.Element => {
         }
     }
 
-    function onSubmit(values: SendProducerInfo, actions: any) {
+    function onSubmit(values: SendProducerInfo, actions: FormikHelpers<SendProducerInfo>) {
         if (activeStep === steps.length - 1) {
             submitForm(values, actions);
         } else {
@@ -131,7 +131,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                     </>
                 ) : (
                     <Formik
-                        enableReinitialize={true}
+                        enableReinitialize
                         initialValues={info}
                         validationSchema={validationSchema[activeStep]}
                         onSubmit={onSubmit}
@@ -160,7 +160,7 @@ export const ProducerPageComponent = (): JSX.Element => {
                     </Formik>
                 )}
             </Fragment>
-            {isLoading && <LoadingOverlay/>}
+            {isLoading && <LoadingOverlay />}
         </Grid>
     );
 }

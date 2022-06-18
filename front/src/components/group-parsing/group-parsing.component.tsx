@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import _ from 'lodash';
+import { groupBy, map } from 'lodash';
+import { PlayArrow } from '@mui/icons-material';
 import { Grid, Button } from '@mui/material';
-import PlayArrow from '@mui/icons-material/PlayArrow';
 import { getGroupsParsingStates, resetGroup } from '~/api';
 import { LoadingOverlay } from '~/components';
 import type { CommodityGroupParsingState } from '~/types';
@@ -15,8 +15,8 @@ export const GroupParsingComponent = (): JSX.Element => {
     const [classesWithItems, setClassesWithItems] = useState<CommodityClassWithItems[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const groupGroups = (groups: CommodityGroupParsingState[]): CommodityClassWithItems[] => {
-        return _.map(_.groupBy(groups, 'tov_class'), (value, key) => ({ tov_class: key, items: value }));
+    const arrangeGroups = (groups: CommodityGroupParsingState[]): CommodityClassWithItems[] => {
+        return map(groupBy(groups, 'tov_class'), (value, key) => ({ tov_class: key, items: value }));
     }
 
     const loadGroups = async (): Promise<void> => {
@@ -25,7 +25,7 @@ export const GroupParsingComponent = (): JSX.Element => {
         try {
             const groups: CommodityGroupParsingState[] = await getGroupsParsingStates();
 
-            setClassesWithItems(groupGroups(groups));
+            setClassesWithItems(arrangeGroups(groups));
         } catch(e) {} finally {
             setIsLoading(false);
         }
@@ -57,14 +57,15 @@ export const GroupParsingComponent = (): JSX.Element => {
                                     <td style={{ padding: '.5rem' }}>
                                         {group.button === 'green'
                                             ? <Button
-                                                variant="contained"
                                                 color="success"
+                                                fullWidth
                                                 startIcon={<PlayArrow />}
+                                                variant="contained"
                                                 onClick={() => handleGroupReset(group.id)}
                                               >
                                                   Запустить
                                               </Button>
-                                            : <Button variant="contained" color="error">Недоступно</Button>
+                                            : <Button color="error" fullWidth variant="contained">Недоступно</Button>
                                         }
                                     </td>
                                     <td style={{ padding: '.5rem' }}>{group.tov_group} ({group.button})</td>

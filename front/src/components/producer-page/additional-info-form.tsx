@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Field, useField } from 'formik';
 import { Grid, FormHelperText } from '@mui/material';
 import { formModel } from './form-model';
 
-const UploadField = ({ field, isError, label, name, ...props }: any): JSX.Element => {
-    return (
-        <Field
-            variant="outlined"
-            name="uploader"
-            title={label}
-            type="file"
-            style={{ display: 'flex', color: isError ? 'red' : 'rgba(0, 0, 0, 0.54)' }}
-            {...props}
-        />
-    );
-};
+const UploadField = ({ field, isError, label, name, ...props }: any): JSX.Element => (
+    <Field
+        name="uploader"
+        title={label}
+        style={{ display: 'flex', color: isError ? 'red' : 'rgba(0, 0, 0, 0.54)' }}
+        type="file"
+        variant="outlined"
+        {...props}
+    />
+);
 
 export const AdditionalInfoForm = (): JSX.Element => {
     const [field, { touched, error }, { setValue }] = useField(formModel.fileInfo.name);

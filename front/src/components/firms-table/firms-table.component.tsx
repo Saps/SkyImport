@@ -1,17 +1,15 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import Paper from '@mui/material/Paper';
-import {
-    Autocomplete, Box, Button, ButtonGroup, Card, CardContent, Checkbox, Grid, Table,
-    TableBody, TableContainer, TableRow, TableCell, TableHead, TablePagination, TextField,
-} from '@mui/material';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import { ChangeEvent, MouseEvent, SyntheticEvent, useState, useCallback, useEffect } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { debounce } from 'lodash';
-import { getFirms, getRegions, getGroups, approveItem, rejectItem } from '~/api';
+import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
+import {
+    Autocomplete, Box, Button, ButtonGroup, Card, CardContent, Checkbox, Grid, Paper, Table,
+    TableBody, TableContainer, TableRow, TableCell, TableHead, TablePagination, TextField,
+} from '@mui/material';
+import { approveItem, getFirms, getGroups, getRegions, rejectItem } from '~/api';
 import { LoadingOverlay, RejectModalComponent } from '~/components';
-import type { Firm, FirmsFilterParams, Region, FirmView, CommodityGroup } from '~/types';
-import { TablePaginationActionsComponent } from './table-pagination-actions.component';
+import type { CommodityGroup, Firm, FirmView, Region } from '~/types';
+import { TablePaginationActions } from './table-pagination-actions';
 
 import './firms-table.component.scss';
 
@@ -22,47 +20,22 @@ interface FiltersValue {
     prodname: string;
 }
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
-const loadFirmsView = async (
-    type: 'approved' | 'premoderated' = 'approved',
-    filterParams: FirmsFilterParams = {},
-    currentPage: number,
-    perPage: number,
-    setFirmsView: React.Dispatch<React.SetStateAction<Firm[]>>,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setItemsCount: React.Dispatch<React.SetStateAction<number>>,
-): Promise<void> => {
-    setIsLoading(true);
-
-    try {
-        const view: FirmView = await getFirms(type, filterParams, currentPage * perPage, perPage);
-
-        setFirmsView(view.items);
-        setItemsCount(view.count);
-    } catch (e) {
-    } finally {
-        setIsLoading(false);
-    }
-};
-
 interface FirmsTableComponentProps {
     entriesType: 'approved' | 'premoderated';
 }
 
-export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesType: 'approved' }): JSX.Element => {
-    const [perPage, setPerPage] = useState<number>(5);
-    const [rejectModalId, setRejectModalId] = useState<number>(-1);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
-    const [firmsView, setFirmsView] = useState<Firm[]>([]);
-    const [currentPage, setCurrentPage] = useState<number>(0);
-    const [regions, setRegions] = useState<Region[]>([]);
+export const FirmsTableComponent = ({ entriesType = 'approved' }: FirmsTableComponentProps): JSX.Element => {
+    const [alternativeCategories, setAlternativeCategories] = useState<CommodityGroup[]>([]);
     const [categories, setCategories] = useState<CommodityGroup[]>([]);
     const [categoriesLoading, setCategoriesLoading] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [firmsView, setFirmsView] = useState<Firm[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
     const [itemsCount, setItemsCount] = useState<number>(0);
-    const [alternativeCategories, setAlternativeCategories] = useState<CommodityGroup[]>([]);
+    const [perPage, setPerPage] = useState<number>(5);
+    const [regions, setRegions] = useState<Region[]>([]);
+    const [rejectModalId, setRejectModalId] = useState<number>(-1);
 
     const { handleChange, handleSubmit, setFieldValue, values }: FormikProps<FiltersValue> = useFormik<FiltersValue>({
         initialValues: {
@@ -71,22 +44,24 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
             name: '',
             prodname: '',
         },
+        onSubmit: async (values) => {
+            setIsLoading(true);
 
-        onSubmit: values => {
-            loadFirmsView(
-                props.entriesType,
-                {
+            try {
+                const filterParams = {
                     name: values.name,
                     prodname: values.prodname,
-                    ...(values.category.id >= 0 ? { category: values.category.id } : {}),
-                    ...(values.region.id >= 0 ? { region: values.region.id } : {}),
-                },
-                currentPage,
-                perPage,
-                setFirmsView,
-                setIsLoading,
-                setItemsCount,
-            );
+                    ...(values.category.id > -1 ? { category: values.category.id } : {}),
+                    ...(values.region.id > -1 ? { region: values.region.id } : {}),
+                };
+                const view: FirmView = await getFirms(entriesType, filterParams, currentPage * perPage, perPage);
+
+                setFirmsView(view.items);
+                setItemsCount(view.count);
+            } catch (e) {
+            } finally {
+                setIsLoading(false);
+            }
         },
     });
 
@@ -95,51 +70,38 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
         submitWithDebounce();
     };
 
-    const handleCategoryChange = (e: React.SyntheticEvent, value: CommodityGroup | null): void => {
-        console.log('handleCategoryChange', value);
+    const handleCategoryChange = (e: SyntheticEvent, value: CommodityGroup | null): void => {
         handleChange(e);
-        setFieldValue('category', value ? value : { id: -1, tov_class: '', tov_group: '' });
-        updateAlternativeCategories(value);
+        setFieldValue('category', value ?? { id: -1, tov_class: '', tov_group: '' });
+        setAlternativeCategories(value && value.id > 0 ? categories.filter(c => c.tov_class === value.tov_class) : []);
         applyNewFilter();
     };
 
-    const updateAlternativeCategories = (selectedCategory: CommodityGroup | null) => {
-        console.log('category', selectedCategory);
-
-        if (!selectedCategory || selectedCategory.id < 0) {
-            setAlternativeCategories([]);
-
-            return;
-        }
-
-        setAlternativeCategories(categories.filter(c => c.tov_class === (selectedCategory as CommodityGroup).tov_class));
-    };
-
-    const handleRegionChange = (e: React.SyntheticEvent, value: Region | null): void => {
+    const handleRegionChange = (e: SyntheticEvent, value: Region | null): void => {
         handleChange(e);
-        setFieldValue('region', value ? value : { id: -1, name: '' });
+        setFieldValue('region', value ?? { id: -1, name: '' });
         applyNewFilter();
     };
 
-    const handleNameChange = (e: React.SyntheticEvent): void => {
+    const handleNameChange = (e: SyntheticEvent): void => {
         handleChange(e);
         setFieldValue('name', (e.target as HTMLInputElement).value);
         applyNewFilter();
     };
 
-    const handleProductNameChange = (e: React.SyntheticEvent): void => {
+    const handleProductNameChange = (e: SyntheticEvent): void => {
         handleChange(e);
         setFieldValue('prodname', (e.target as HTMLInputElement).value);
         applyNewFilter();
     };
 
-    const handlePageChange = (e: React.MouseEvent<HTMLButtonElement> | null, page: number): void => {
+    const handlePageChange = (e: MouseEvent<HTMLButtonElement> | null, page: number): void => {
         setCurrentPage(page);
         handleSubmit();
     };
 
-    const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
-        setPerPage(+e.target.value as number);
+    const handleRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
+        setPerPage(+e.target.value);
         setCurrentPage(0);
         handleSubmit();
     }
@@ -152,10 +114,10 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
         }
     }
 
-    const handleRejectItem = async (id: number, comment: string): Promise<void> => {
+    const handleRejectItem = async (id: number, message: string): Promise<void> => {
         setRejectModalId(-1);
 
-        const result = await rejectItem(id, comment);
+        const result = await rejectItem(id, message);
 
         if (result) {
             handleSubmit();
@@ -189,8 +151,6 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
             setCategoriesLoading(false);
         }
     };
-
-    const somethingIsLoading = () => categoriesLoading || isPageLoading || isLoading;
 
     useEffect(() => {
         loadRegions();
@@ -247,9 +207,9 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                     renderOption={(props, option, { selected }) => (
                                         <li {...props}>
                                             <Checkbox
-                                                icon={icon}
-                                                checkedIcon={checkedIcon}
+                                                checkedIcon={<CheckBox fontSize="small" />}
                                                 checked={selected}
+                                                icon={<CheckBoxOutlineBlank fontSize="small" />}
                                                 style={{ marginRight: 8 }}
                                             />
                                             {option.tov_group}
@@ -267,7 +227,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                     onChange={handleCategoryChange}
                                 />
                             </Grid>
-                            {alternativeCategories.length ?
+                            {alternativeCategories.length > 0 && (
                                 <Grid item xs={12}>
                                     <Box sx={{ fontWeight: 'bold' }}>Похожая продукция</Box>
                                     <ButtonGroup orientation="vertical">
@@ -283,11 +243,11 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                         )}
                                     </ButtonGroup>
                                 </Grid>
-                            : null}
+                            )}
                         </Grid>
                     </CardContent>
                 </Card>
-                {(isLoading || isPageLoading) && <LoadingOverlay/>}
+                {(isLoading || isPageLoading) && <LoadingOverlay />}
             </Grid>
             <Grid item xs={9}>
                 <Paper>
@@ -302,9 +262,7 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                     <TableCell component="th">Сайт</TableCell>
                                     <TableCell component="th">Телефон</TableCell>
                                     <TableCell component="th">E-mail</TableCell>
-                                    {props.entriesType === 'premoderated' ?
-                                        <TableCell component="th">Управление</TableCell>
-                                    : null}
+                                    {entriesType === 'premoderated' && <TableCell component="th">Управление</TableCell>}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -317,33 +275,33 @@ export const FirmsTableComponent = (props: FirmsTableComponentProps = { entriesT
                                         <TableCell component="td">{row.site}</TableCell>
                                         <TableCell component="td">{row.phone}</TableCell>
                                         <TableCell component="td">{row.email}</TableCell>
-                                        {props.entriesType === 'premoderated' ?
+                                        {entriesType === 'premoderated' && (
                                             <TableCell component="td">
                                                 <Grid container spacing={1}>
                                                     <Grid item><Button variant="contained" onClick={() => handleApproveItem(row.id)}>Утвердить</Button></Grid>
                                                     <Grid item><Button variant="outlined" onClick={() => setRejectModalId(row.id)}>Отклонить</Button></Grid>
                                                 </Grid>
                                             </TableCell>
-                                        : null}
+                                        )}
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
                     <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
+                        ActionsComponent={TablePaginationActions}
                         component="div"
                         count={itemsCount}
-                        rowsPerPage={perPage}
-                        page={currentPage}
                         onPageChange={handlePageChange}
                         onRowsPerPageChange={handleRowsPerPageChange}
-                        ActionsComponent={TablePaginationActionsComponent}
+                        page={currentPage}
+                        rowsPerPage={perPage}
+                        rowsPerPageOptions={[5, 10, 25]}
                     />
-                    {somethingIsLoading() && <LoadingOverlay />}
+                    {(categoriesLoading || isLoading || isPageLoading) && <LoadingOverlay />}
                     {rejectModalId > -1 && (
                         <RejectModalComponent
-                            info={'Вы действительно отклонить заявку?'}
+                            info="Вы действительно отклонить заявку?"
                             onClose={() => setRejectModalId(-1)}
                             onSubmit={message => handleRejectItem(rejectModalId, message)}
                         />

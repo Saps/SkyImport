@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
+import { useFormik } from 'formik';
 import { LockOutlined } from '@mui/icons-material';
 import { Alert, Avatar, Box, Button, Paper, TextField, Typography } from '@mui/material';
-import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { loginAction } from '~/store/user/actions';
 import { RootState } from '~/store/rootReducer';

@@ -1,12 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import type {
-    ApiError, LoginInfo, LoginRequest, LogoutInfo, Region, UserCredentials, UserInfo,
+    ApiError, CommodityGroup, CommodityGroupParsingState, GetProducerInfo, FirmView, FirmsFilterParams,
+    FirmsRequest, LoginInfo, LoginRequest, LogoutInfo, Region, SendProducerInfo, UserCredentials, UserInfo,
 } from '~/types';
-
-import type { FirmsFilterParams, FirmsRequest, FirmView } from '~/types';
-import type { CommodityGroup, CommodityGroupParsingState } from '~/types';
-import {GetProducerInfo, SendProducerInfo} from "~/types";
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_API_URL}/api`,
@@ -70,23 +67,14 @@ export async function currentUser(): Promise<UserInfo> {
 }
 
 export async function getFirms(
-        type: 'approved' | 'premoderated' = 'approved',
-        filterParams: FirmsFilterParams,
-        offset: number = 0,
-        limit: number = 15,
-    ): Promise<FirmView> {
-    let url: string = '';
-
-    if (type === 'approved') {
-        url = '/firmfil';
-    } else if (type === 'premoderated') {
-        url = '/firmmod';
-    }
-
+    type: 'approved' | 'premoderated' = 'approved',
+    filterParams: FirmsFilterParams,
+    offset: number = 0,
+    limit: number = 15,
+): Promise<FirmView> {
     try {
-        const { data } = await api.get<FirmsRequest, AxiosResponse<FirmView>>(
-            url, { params: { ...filterParams, offset, limit } }
-        );
+        const url = type === 'approved' ? '/firmfil' : '/firmmod';
+        const { data } = await api.get<FirmsRequest, AxiosResponse<FirmView>>(url, { params: { ...filterParams, offset, limit } });
 
         return data as FirmView;
     } catch (e) {
@@ -154,9 +142,9 @@ export async function approveItem(id: number): Promise<boolean> {
     }
 }
 
-export async function rejectItem(id: number, comment: string): Promise<boolean> {
+export async function rejectItem(id: number, reason: string): Promise<boolean> {
     try {
-        await api.get('/firmreject', { params: { id, reason: comment } });
+        await api.get('/firmreject', { params: { id, reason } });
 
         return true;
     } catch (e) {

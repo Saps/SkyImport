@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, TextField, Typography } from '@mui/material';
 
 import './reject-modal.component.scss';

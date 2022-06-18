@@ -1,5 +1,5 @@
 /// <reference types="react-scripts" />
-import {Theme} from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 
 declare module "@mui/private-theming" {
     import type { Theme } from "@mui/material/styles";

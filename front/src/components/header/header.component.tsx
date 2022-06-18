@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ReactSVG } from 'react-svg';
@@ -24,9 +24,9 @@ export const HeaderComponent = (): JSX.Element => {
     const history = useHistory();
     const user = useSelector((state: RootState) => state.user);
 
-    const handleClickMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+    const handleClickMenu = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
 
-    const handleCloseMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const handleCloseMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(null);
         if (event.currentTarget.id === 'menu-item-logout') {
             handleLogout();
